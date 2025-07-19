@@ -49,7 +49,7 @@ export default function Home() {
     <div className="container">
       <div className="header">
         <Image 
-          src="https://i.ibb.co/6r2kS0C/sorting-hat.png" 
+          src="/Sorting_Hat.png" 
           alt="The Sorting Hat"
           width={100}
           height={100}

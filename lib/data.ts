@@ -4,33 +4,33 @@ export const categoryData: { [key: string]: any } = {
     name: 'Milk Tea Flavors',
     icon: '🧋',
     items: [
-      { id: 'taro', name: 'Taro', image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400' },
-      { id: 'matcha', name: 'Matcha', image: 'https://images.unsplash.com/photo-1515823064-d6e0c04616a7?w=400' },
-      { id: 'jasmine', name: 'Jasmine Green', image: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=400' },
-      { id: 'thai', name: 'Thai', image: 'https://images.unsplash.com/photo-1571934811356-5cc061b6821f?w=400' },
-      { id: 'honeydew', name: 'Honeydew', image: 'https://images.unsplash.com/photo-1563379091051-5d5c0b632f89?w=400' }
+      { id: 'taro', name: 'Taro', image: '/taro-boba.png' },
+      { id: 'matcha', name: 'Matcha', image: '/matcha-boba.jpg' },
+      { id: 'jasmine', name: 'Jasmine Green', image: '/jasmine-green-boba.jpg' },
+      { id: 'thai', name: 'Thai', image: '/thai-tea-boba.jpg' },
+      { id: 'honeydew', name: 'Honeydew', image: '/honeydew-boba.jpg' }
     ]
   },
   'snack-chips': {
     name: 'Snack Chips',
     icon: '🍟',
     items: [
-      { id: 'hot-cheetos', name: 'Hot Cheetos', image: 'https://i.imgur.com/k1h822W.jpeg' },
-      { id: 'salt-vinegar', name: 'Salt & Vinegar Lays', image: 'https://i.imgur.com/uDnjRz3.jpeg' },
-      { id: 'cool-ranch', name: 'Cool Ranch Doritos', image: 'https://i.imgur.com/2s3eY71.jpeg' },
-      { id: 'jalapeno', name: 'Jalapeño Kettle Chips', image: 'https://i.imgur.com/HqP3N2N.jpeg' },
-      { id: 'sour-cream', name: 'Sour Cream & Onion Ruffles', image: 'https://i.imgur.com/DsoNQqp.jpeg' }
+      { id: 'hot-cheetos', name: 'Hot Cheetos', image: '/hot-cheetos.png' },
+      { id: 'salt-vinegar', name: 'Salt & Vinegar Lays', image: '/svlays.png' },
+      { id: 'cool-ranch', name: 'Cool Ranch Doritos', image: '/cldoritos.png' },
+      { id: 'jalapeno', name: 'Jalapeño Kettle Chips', image: '/kettle.png' },
+      { id: 'sour-cream', name: 'Sour Cream & Onion Ruffles', image: '/ruffles.png' }
     ]
   },
   'burgers': {
     name: 'Fast Food Burgers',
     icon: '🍔',
     items: [
-      { id: 'mcdonalds', name: "McDonald's", image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400' },
-      { id: 'wendys', name: "Wendy's", image: 'https://images.unsplash.com/photo-1553979459-d2229ba7433a?w=400' },
-      { id: 'burger-king', name: 'Burger King', image: 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=400' },
-      { id: 'carls-jr', name: "Carl's Jr.", image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=400' },
-      { id: 'jack-in-box', name: 'Jack in the Box', image: 'https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?w=400' }
+      { id: 'mcdonalds', name: "McDonald's", image: '/mcd.png' },
+      { id: 'wendys', name: "Wendy's", image: '/wendys.jpg' },
+      { id: 'burger-king', name: 'Burger King', image: '/bk.png' },
+      { id: 'carls-jr', name: "Carl's Jr.", image: '/cj.png' },
+      { id: 'jack-in-box', name: 'Jack in the Box', image: '/jb.svg' }
     ]
   },
   'ice-cream': {
