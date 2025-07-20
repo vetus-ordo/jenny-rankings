@@ -14,7 +14,7 @@ const getPersonalizedCompatibility = (score: number) => {
   };
   if (score > 60) return {
     title: "A Powerful Harmony!",
-    message: "We agree on so much. This is the kind of magic that lasts.",
+    message: "We agree on so much! This is the kind of magic that lasts.",
     subtext: "Definitely more than just a fleeting charm."
   };
    if (score > 40) return {
@@ -35,16 +35,20 @@ export default function ResultsPage() {
   const [player2Name, setPlayer2Name] = useState('');
   const [revealStep, setRevealStep] = useState(0);
   const matchRefs = useRef<(HTMLTableRowElement | null)[]>([]);
-  
-  useEffect(() => {
-    setPlayer1Name(localStorage.getItem('player1') || 'Wizard 1');
-    setPlayer2Name(localStorage.getItem('player2') || 'Wizard 2');
+
+  const loadRankings = () => {
     const rankings: { [key: string]: any } = {};
     Object.keys(categoryData).forEach(category => {
       const saved = localStorage.getItem(`rankings_${category}`);
       if (saved) rankings[category] = JSON.parse(saved);
     });
     setAllRankings(rankings);
+  };
+  
+  useEffect(() => {
+    setPlayer1Name(localStorage.getItem('player1') || 'Wizard 1');
+    setPlayer2Name(localStorage.getItem('player2') || 'Wizard 2');
+    loadRankings();
 
     const sequence = [
       () => setRevealStep(1),
@@ -61,7 +65,18 @@ export default function ResultsPage() {
     ];
     sequence.forEach((step, i) => setTimeout(step, (i + 1) * 2000));
   }, []);
-  
+
+  // Live update listener for the results page
+  useEffect(() => {
+    const handleStorageChange = () => {
+      loadRankings();
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
+
   const calculateCompatibility = () => {
     let exactMatches = 0;
     let totalComparisons = 0;
@@ -117,17 +132,28 @@ export default function ResultsPage() {
               <div key={categoryId} className="card compatibility-reveal" style={{animationDelay: `${catIndex * 0.3}s`, padding: '1.5rem', marginBottom: '1.5rem'}}>
                 <h3 style={{ fontFamily: 'Cinzel', marginBottom: '1rem', textAlign: 'center' }}>{category.name}</h3>
                 <table style={{width: '100%', textAlign: 'left'}}>
-                  <thead><tr><th>Rank</th><th>{player1Name}</th><th>{player2Name}</th><th>Accord</th></tr></thead>
+                  <thead>
+                    <tr>
+                      <th style={{width: '15%'}}>Rank</th>
+                      <th>{player1Name}</th>
+                      <th>{player2Name}</th>
+                      <th style={{width: '15%', textAlign: 'center'}}>Accord</th>
+                    </tr>
+                  </thead>
                   <tbody>
                     {ranking.player1.map((itemId: string, index: number) => {
                       const player1Item = category.items.find((i: any) => i.id === itemId);
                       const player2Item = category.items.find((i: any) => i.id === ranking.player2[index]);
                       const isMatch = itemId === ranking.player2[index];
+                      
+                      // Assign the ref to the table row only if it's a match
+                      const ref = isMatch ? (el: HTMLTableRowElement | null) => { matchRefs.current[index] = el } : null;
+
                       return (
-                        <tr key={index} ref={el => { if(isMatch) matchRefs.current[index] = el }} className={isMatch ? 'match' : ''}>
+                        <tr key={index} ref={ref} className={isMatch ? 'match' : ''}>
                           <td><strong>#{index + 1}</strong></td>
-                          <td>{player1Item?.name}</td>
-                          <td>{player2Item?.name}</td>
+                          <td>{player1Item?.name || '...'}</td>
+                          <td>{player2Item?.name || '...'}</td>
                           <td style={{textAlign: 'center'}}>{isMatch ? '✨' : ''}</td>
                         </tr>
                       )

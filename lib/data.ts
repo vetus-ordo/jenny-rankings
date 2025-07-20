@@ -2,6 +2,7 @@
 export const categoryData: { [key: string]: any } = {
   'milk-tea': {
     name: 'Milk Tea Flavors',
+    instruction: 'Rank from Favorite to Least Favorite:',
     icon: '🧋',
     items: [
       { id: 'taro', name: 'Taro', image: '/taro-boba.png' },
@@ -13,6 +14,7 @@ export const categoryData: { [key: string]: any } = {
   },
   'snack-chips': {
     name: 'Chips',
+    instruction: 'Rank from Favorite to Least Favorite:',
     icon: '🍟',
     items: [
       { id: 'hot-cheetos', name: 'Hot Cheetos', image: '/hot-cheetos.png' },
@@ -24,6 +26,7 @@ export const categoryData: { [key: string]: any } = {
   },
   'burgers': {
     name: 'Fast Food',
+    instruction: 'Rank from Best to Worst:',
     icon: '🍔',
     items: [
       { id: 'mcdonalds', name: "McDonald's", image: '/mcd.png' },
@@ -35,6 +38,7 @@ export const categoryData: { [key: string]: any } = {
   },
   'ice-cream': {
     name: 'Ice Cream Flavors',
+    instruction: 'Rank from Most Delicious to Least:',
     icon: '🍦',
     items: [
       { id: 'dark-mint', name: 'Dark Mint Stracciatella', image: '/mint.png' },
@@ -46,6 +50,7 @@ export const categoryData: { [key: string]: any } = {
   },
   'celebrities': {
     name: 'Men',
+    instruction: 'Rank from Most to Least Handsome:',
     icon: '⭐',
     items: [
       { id: 'timothee', name: 'Timothée Chalamet', image: '/chalamet.jpg' },
@@ -57,6 +62,7 @@ export const categoryData: { [key: string]: any } = {
   },
   'colors': {
     name: 'Colors',
+    instruction: 'Rank from Favorite to Least Favorite:',
     icon: '🎨',
     items: [
       { id: 'taupe', name: 'Taupe', image: '/taupe.png' },
@@ -68,6 +74,7 @@ export const categoryData: { [key: string]: any } = {
   },
   'disney-princesses': {
     name: 'Disney Princesses',
+    instruction: 'Rank from Favorite to Least Favorite:',
     icon: '👸',
     items: [
       { id: 'belle', name: 'Belle', image: '/belle.png' },
@@ -79,6 +86,7 @@ export const categoryData: { [key: string]: any } = {
   },
   'dog-breeds': {
     name: 'Dogs',
+    instruction: 'Rank from Favorite to Least Favorite Breed:',
     icon: '🐕',
     items: [
       { id: 'golden-retriever', name: 'Golden Retriever', image: '/golden.jpg' },
@@ -90,6 +98,7 @@ export const categoryData: { [key: string]: any } = {
   },
   'date-activities': {
     name: 'On Active Saturday',
+    instruction: 'Rank from Most Appealing to Least Appealing:',
     icon: '❤️',
     items: [
       { id: 'beach', name: 'Beach Day', image: '/beach.jpg' },
@@ -101,6 +110,7 @@ export const categoryData: { [key: string]: any } = {
   },
   'weekend-activities': {
     name: 'On Lazy Sunday',
+    instruction: 'Rank from Most Appealing to Least Appealing:',
     icon: '🏠',
     items: [
       { id: 'binge-watching', name: 'Binge-watching a show', image: '/binge.jpg' },
@@ -112,6 +122,7 @@ export const categoryData: { [key: string]: any } = {
   },
   'splurge-items': {
     name: 'Things to Splurge On',
+    instruction: 'Rank from Highest Priority to Lowest:',
     icon: '💰',
     items: [
       { id: 'technology', name: 'Technology/gadgets', image: '/tech.png' },
@@ -123,6 +134,7 @@ export const categoryData: { [key: string]: any } = {
   },
   'chores': {
     name: 'Most Hated Chores',
+    instruction: 'Rank from Most Hated to Least Hated:',
     icon: '🧹',
     items: [
       { id: 'dishes', name: 'Doing dishes', image: '/dishes.jpg' },
@@ -134,6 +146,7 @@ export const categoryData: { [key: string]: any } = {
   },
   'vacation-destinations': {
     name: 'Vacation Destinations',
+    instruction: 'Rank from "Want to Visit Most" to "Least":',
     icon: '✈️',
     items: [
       { id: 'cape-town', name: 'Cape Town, South Africa', image: '/sa.jpg' },
@@ -145,6 +158,7 @@ export const categoryData: { [key: string]: any } = {
   },
   'satisfying-moments': {
     name: 'Satisfying Moments',
+    instruction: 'Rank from Most Satisfying to Least:',
     icon: '😌',
     items: [
       { id: 'plastic-peel', name: 'Peeling the plastic off a new screen', image: '/screen.png' },
@@ -156,6 +170,7 @@ export const categoryData: { [key: string]: any } = {
   },
   'fear-factor': {
     name: 'Fear Factor Challenges',
+    instruction: 'Rank from "I Could Do That" to "Absolutely Not":',
     icon: '😱',
     items: [
       { id: 'sheep-eyeball', name: 'Eating a Sheep\'s Eyeball', image: '/eyeball.jpg' },
@@ -167,6 +182,7 @@ export const categoryData: { [key: string]: any } = {
   },
   'annoying-songs': {
     name: 'Annoying Songs',
+    instruction: 'Rank from "Most Hated" to "Least Hated":',
     icon: '🎵',
     items: [
       { id: 'let-it-go', name: 'Let It Go', image: '/frozen.jpg' },
@@ -178,6 +194,7 @@ export const categoryData: { [key: string]: any } = {
   },
   'million-dollar-offers': {
     name: 'Million Dollar Offers',
+    instruction: 'Rank from "Most Tempting" to "Not a Chance":',
     icon: '💸',
     items: [
       { id: 'no-favorite-food', name: 'Never eat your favorite food again', image: '/dduk.jpg' },

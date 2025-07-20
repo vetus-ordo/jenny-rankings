@@ -24,7 +24,6 @@ html, body {
   cursor: url('/wand.png') 6 0, auto;
 }
 
-/* General transitions for polish */
 * {
   box-sizing: border-box;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -48,18 +47,6 @@ html, body {
   0% { transform: translate(0, 0); }
   50% { transform: translate(-20px, -20px); }
   100% { transform: translate(0, 0); }
-}
-
-.header h1 {
-  font-family: 'Cinzel', serif;
-  font-size: clamp(2.5rem, 8vw, 4rem);
-  background: linear-gradient(45deg, var(--accent-primary), var(--btn), var(--accent-primary));
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  background-clip: text; /* Standard property for compatibility */
-  -webkit-text-fill-color: transparent;
-  animation: shimmer 4s ease-in-out infinite;
-  text-shadow: 2px 2px 8px rgba(0,0,0,0.1);
 }
 
 @keyframes shimmer {
@@ -115,11 +102,23 @@ html, body {
   margin-bottom: 50px;
 }
 
+.header h1 {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(2.5rem, 8vw, 4rem);
+  background: linear-gradient(45deg, var(--accent-primary), var(--btn), var(--accent-primary));
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 4s ease-in-out infinite;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+}
+
 .card {
   background: var(--card-bg);
   border: 1px solid var(--card-brd);
   backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px); /* For Safari */
+  -webkit-backdrop-filter: blur(8px);
   border-radius: 12px;
   padding: 2rem;
   box-shadow: 0 8px 20px rgba(0,0,0,0.08);
@@ -166,7 +165,7 @@ html, body {
 
 .input-group input {
   padding: 12px;
-  border: 1px solid var(--border-soft);
+  border: 1px solid var(--card-brd);
   border-radius: 8px;
   font-size: 1rem;
   font-family: 'Quicksand', sans-serif;
@@ -185,6 +184,29 @@ html, body {
   font-family: 'Cinzel', serif;
 }
 
+/* === RANKING PAGE LAYOUT === */
+.ranking-columns {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 2rem;
+  width: 100%;
+}
+
+.ranking-column {
+  flex: 1;
+  min-width: 0;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 1rem;
+  border-radius: 12px;
+}
+
+.ranking-column h3 {
+  font-family: 'Cinzel', serif;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
 .ranking-item {
   display: flex;
   align-items: center;
@@ -200,6 +222,7 @@ html, body {
 .ranking-item:hover {
   box-shadow: 0 0 20px rgba(106, 123, 149, 0.4);
   border: 1px solid rgba(106, 123, 149, 0.6);
+  transform: scale(1.02);
 }
 .ranking-item img {
   width: 50px;
@@ -222,6 +245,7 @@ html, body {
   margin-right: 15px;
 }
 
+/* === RESULTS PAGE === */
 .comparison-table {
   width: 100%;
   border-collapse: collapse;
@@ -242,5 +266,8 @@ html, body {
   }
   .card:active {
     transform: scale(0.98);
+  }
+  .ranking-columns {
+    flex-direction: column; /* Stacks the columns on mobile */
   }
 }
