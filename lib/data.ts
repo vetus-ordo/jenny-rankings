@@ -198,7 +198,7 @@ export const categoryData: { [key: string]: any } = {
     icon: '💸',
     items: [
       { id: 'no-favorite-food', name: 'Never eat your favorite food again', image: '/dduk.jpg' },
-      { id: 'forehead-tattoo', name: 'Get a forehead tattoo', image: '/tattoo.jpg' },
+      { id: 'forehead-tattoo', name: 'Get a forehead tattoo', image: '/forehead.jpg' },
       { id: 'camera-crew', name: 'Be followed by a camera crew 24/7 for 6 months', image: '/camera.jpg' },
       { id: 'annoying-stranger', name: 'Always have a prominent stain on your shirt', image: '/stain.jpg' },
       { id: 'stranger-bank', name: 'Gain 100 pounds for a year', image: '/fat.jpg' }
