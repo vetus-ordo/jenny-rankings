@@ -9,22 +9,22 @@ import { createHeartBurst } from '@/lib/effects'
 const getPersonalizedCompatibility = (score: number) => {
   if (score > 80) return {
     title: "An Extraordinary Connection ✨",
-    message: "Wow. Your tastes are so in sync, it's practically magic.",
-    subtext: "Are you two sure you didn't share a Polyjuice Potion?"
+    message: "Wow. Our tastes are so in sync, it's practically magic.",
+    subtext: "Are you sure we didn't share a Polyjuice Potion?"
   };
   if (score > 60) return {
     title: "A Powerful Harmony!",
-    message: "You agree on so much. This is the kind of magic that lasts.",
+    message: "We agree on so much. This is the kind of magic that lasts.",
     subtext: "Definitely more than just a fleeting charm."
   };
    if (score > 40) return {
     title: "A Promising Accord",
-    message: "You agree on the important things and can have fun debating the rest. A perfect balance!",
+    message: "We agree on the important things and can have fun debating the rest. A perfect balance!",
     subtext: "The foundation is strong."
   };
   return {
     title: "The Classic 'Opposites Attract'",
-    message: "Your differences could be what make things exciting. You complement each other.",
+    message: "Our differences could be what make things exciting. We complement each other.",
     subtext: "Every adventure needs a little unpredictability."
   };
 }
