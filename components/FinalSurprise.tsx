@@ -4,7 +4,7 @@ const FinalSurprise = () => (
   <div className="card text-center p-8 animate__animated animate__zoomIn">
     <h2 style={{ fontFamily: 'Cinzel', fontSize: '1.75rem', marginBottom: '1rem' }}>One last thing...</h2>
     <p style={{ fontSize: '1.1rem', marginBottom: '1.5rem' }}>
-      The best part of making this wasn't the code, it was thinking about your answers and trying to make you smile. I really hope you enjoyed it.
+      The best part of making this wasn't the code. It was thinking about you and trying to make you smile. I really hope you enjoyed it.
     </p>
     <div style={{ fontSize: '3rem' }} className="animate-pulse">💘</div>
   </div>
