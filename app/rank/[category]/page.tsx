@@ -92,7 +92,7 @@ export default function RankingPage() {
                 onDrop={() => handleDrop(index, playerKey)}
               >
                 <div className="rank-number">{index + 1}</div>
-                <Image src={item.image} alt={item.name} width={50} height={50} onError={(e) => { (e.target as HTMLImageElement).src = `https://via.placeholder.com/50` }} />
+                <Image src={item.image} alt={item.name} width={100} height={100} onError={(e) => { (e.target as HTMLImageElement).src = `https://via.placeholder.com/50` }} />
                 <h4 style={{textAlign: 'left', marginLeft: '1rem'}}>{item.name}</h4>
               </div>
             );

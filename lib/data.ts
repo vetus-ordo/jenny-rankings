@@ -14,7 +14,7 @@ export const categoryData: { [key: string]: any } = {
   },
   'snack-chips': {
     name: 'Chips',
-    instruction: 'Rank from Favorite to Least Favorite:',
+    instruction: 'Rank from "This is the first bag I grab" to "Why does anyone even like these?":',
     icon: '🍟',
     items: [
       { id: 'hot-cheetos', name: 'Hot Cheetos', image: '/hot-cheetos.png' },
@@ -26,7 +26,7 @@ export const categoryData: { [key: string]: any } = {
   },
   'burgers': {
     name: 'Fast Food',
-    instruction: 'Rank from Best to Worst:',
+    instruction: 'Rank from "I could eat this everyday" to "Ugh barf":',
     icon: '🍔',
     items: [
       { id: 'mcdonalds', name: "McDonald's", image: '/mcd.png' },
@@ -49,7 +49,7 @@ export const categoryData: { [key: string]: any } = {
     ]
   },
   'celebrities': {
-    name: 'Men',
+    name: 'Men (lol)',
     instruction: 'Rank from Most to Least Handsome:',
     icon: '⭐',
     items: [
@@ -61,7 +61,7 @@ export const categoryData: { [key: string]: any } = {
     ]
   },
   'colors': {
-    name: 'Colors',
+    name: 'Your Colors',
     instruction: 'Rank from Favorite to Least Favorite:',
     icon: '🎨',
     items: [
@@ -85,7 +85,7 @@ export const categoryData: { [key: string]: any } = {
     ]
   },
   'dog-breeds': {
-    name: 'Dogs',
+    name: 'We\'re Getting A Dog',
     instruction: 'Rank from Favorite to Least Favorite Breed:',
     icon: '🐕',
     items: [
@@ -116,7 +116,7 @@ export const categoryData: { [key: string]: any } = {
       { id: 'binge-watching', name: 'Binge-watching a show', image: '/binge.jpg' },
       { id: 'baking', name: 'Baking something new', image: '/baking.jpg' },
       { id: 'social-media', name: 'Lounge and scroll', image: '/scrolling.jpg' },
-      { id: 'absolutely-nothing', name: 'Afternoon delight', image: '/afternoon.jpg' },
+      { id: 'absolutely-nothing', name: 'Afternoon delight 😉', image: '/afternoon.jpg' },
       { id: 'crosswords', name: 'Doing crossword puzzles', image: '/crossword.jpg' }
     ]
   },
@@ -134,7 +134,7 @@ export const categoryData: { [key: string]: any } = {
   },
   'chores': {
     name: 'Chores',
-    instruction: 'Rank from Most Hated to Least Hated:',
+    instruction: 'Rank from "This isn\'t so bad" to "I\'m going to make you do this for me":',
     icon: '🧹',
     items: [
       { id: 'dishes', name: 'Doing dishes', image: '/dishes.jpg' },
@@ -182,7 +182,7 @@ export const categoryData: { [key: string]: any } = {
   },
   'annoying-songs': {
     name: 'Annoying Songs',
-    instruction: 'Rank from "Most Hated" to "Least Hated":',
+    instruction: "Rank from \"I never want this stuck in my head\" to \"It's not so bad\"",
     icon: '🎵',
     items: [
       { id: 'let-it-go', name: 'Let It Go', image: '/frozen.jpg' },
