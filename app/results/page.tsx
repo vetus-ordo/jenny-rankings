@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { categoryData } from '@/lib/data'
+import ClientEffects from '@/components/ClientEffects'
 
 export default function ResultsPage() {
   const [allRankings, setAllRankings] = useState<{ [key: string]: any }>({})
@@ -58,81 +59,84 @@ export default function ResultsPage() {
   const compatibilityInfo = getCompatibilityMessage(compatibility.percentage)
 
   return (
-    <div className="container">
-      <div className="header">
-        <h1>The Final Decree</h1>
-        <p>Comparing the magical tastes of {player1Name} and {player2Name}</p>
-      </div>
-
-      <div className="compatibility-section">
-        <h2>Magical Compatibility</h2>
-        <div className="compatibility-score">
-          {compatibility.percentage}%
+    <>
+      <ClientEffects />
+      <main className="container">
+        <div className="header">
+          <h1>The Final Decree</h1>
+          <p>Comparing the magical tastes of {player1Name} and {player2Name}</p>
         </div>
-        <p>
-          <strong>{compatibilityInfo.message}</strong><br />
-          You had {compatibility.exactMatches} exact matches in your rankings!
-        </p>
-      </div>
 
-      {completedCategories.length > 0 ? (
-        <div>
-          <h2 style={{ fontFamily: 'Lora, serif', textAlign: 'center', color: '#422d1a', marginBottom: '30px' }}>
-            Category Breakdowns
-          </h2>
-          {completedCategories.map(categoryId => {
-            const category = categoryData[categoryId as keyof typeof categoryData]
-            const ranking = allRankings[categoryId]
-            if (!category || !ranking) return null
-
-            return (
-              <div key={categoryId} className="results-card">
-                <h3 style={{ fontFamily: 'Lora, serif', marginBottom: '20px', textAlign: 'center' }}>
-                  {category.name}
-                </h3>
-                <table className="comparison-table">
-                  <thead>
-                    <tr>
-                      <th>Rank</th>
-                      <th>{player1Name}'s Pick</th>
-                      <th>{player2Name}'s Pick</th>
-                      <th>Accord</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {ranking.player1.map((itemId: string, index: number) => {
-                      const player1Item = category.items.find((item: any) => item.id === itemId)
-                      const player2ItemId = ranking.player2[index]
-                      const player2Item = category.items.find((item: any) => item.id === player2ItemId)
-                      const isMatch = itemId === player2ItemId
-
-                      return (
-                        <tr key={index} className={isMatch ? 'match' : 'mismatch'}>
-                          <td><strong>#{index + 1}</strong></td>
-                          <td>{player1Item?.name || 'Unknown'}</td>
-                          <td>{player2Item?.name || 'Unknown'}</td>
-                          <td>{isMatch ? '✨' : ''}</td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )
-          })}
+        <div className="compatibility-section card">
+          <h2>Magical Compatibility</h2>
+          <div className="compatibility-score">
+            {compatibility.percentage}%
+          </div>
+          <p>
+            <strong>{compatibilityInfo.message}</strong><br />
+            You had {compatibility.exactMatches} exact matches in your rankings!
+          </p>
         </div>
-      ) : (
-        <div className="results-card">
-          <h3>No completed scrolls yet!</h3>
-          <p>Complete some rankings to see your final decree.</p>
-        </div>
-      )}
 
-      <div style={{ textAlign: 'center', margin: '40px 0' }}>
-        <Link href="/">
-          <button className="btn">← Back to the Great Hall</button>
-        </Link>
-      </div>
-    </div>
+        {completedCategories.length > 0 ? (
+          <div>
+            <h2 style={{ fontFamily: 'Cinzel, serif', textAlign: 'center', color: 'var(--text-primary)', marginBottom: '30px' }}>
+              Category Breakdowns
+            </h2>
+            {completedCategories.map(categoryId => {
+              const category = categoryData[categoryId as keyof typeof categoryData]
+              const ranking = allRankings[categoryId]
+              if (!category || !ranking) return null
+
+              return (
+                <div key={categoryId} className="card" style={{padding: '2rem', marginBottom: '1.5rem'}}>
+                  <h3 style={{ fontFamily: 'Cinzel, serif', marginBottom: '20px', textAlign: 'center' }}>
+                    {category.name}
+                  </h3>
+                  <table className="comparison-table">
+                    <thead>
+                      <tr>
+                        <th>Rank</th>
+                        <th>{player1Name}'s Pick</th>
+                        <th>{player2Name}'s Pick</th>
+                        <th>Accord</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {ranking.player1.map((itemId: string, index: number) => {
+                        const player1Item = category.items.find((item: any) => item.id === itemId)
+                        const player2ItemId = ranking.player2[index]
+                        const player2Item = category.items.find((item: any) => item.id === player2ItemId)
+                        const isMatch = itemId === player2ItemId
+
+                        return (
+                          <tr key={index} className={isMatch ? 'match' : 'mismatch'}>
+                            <td><strong>#{index + 1}</strong></td>
+                            <td>{player1Item?.name || 'Unknown'}</td>
+                            <td>{player2Item?.name || 'Unknown'}</td>
+                            <td style={{textAlign: 'center'}}>{isMatch ? '✨' : ''}</td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )
+            })}
+          </div>
+        ) : (
+          <div className="card">
+            <h3>No completed scrolls yet!</h3>
+            <p>Complete some rankings to see your final decree.</p>
+          </div>
+        )}
+
+        <div style={{ textAlign: 'center', margin: '40px 0' }}>
+          <Link href="/">
+            <button className="primary-button">← Back to the Great Hall</button>
+          </Link>
+        </div>
+      </main>
+    </>
   )
 }

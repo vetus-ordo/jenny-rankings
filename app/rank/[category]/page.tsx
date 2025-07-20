@@ -2,8 +2,9 @@
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
+import Link from 'next/link'
 import { categoryData } from '@/lib/data'
-import Link from 'next/link';
+import ClientEffects from '@/components/ClientEffects'
 
 export default function RankingPage() {
   const params = useParams()
@@ -60,65 +61,68 @@ export default function RankingPage() {
   }
 
   return (
-    <div className="container">
-      <div className="header">
-        <h1>{categoryInfo.name}</h1>
-      </div>
-
-      <div className="ranking-container">
-        <div className="player-tabs">
-          <button 
-            className={`player-tab ${currentPlayer === 1 ? 'active' : ''}`}
-            onClick={() => setCurrentPlayer(1)}
-          >
-            {player1Name}'s Scroll
-          </button>
-          <button 
-            className={`player-tab ${currentPlayer === 2 ? 'active' : ''}`}
-            onClick={() => setCurrentPlayer(2)}
-          >
-            {player2Name}'s Scroll
-          </button>
+    <>
+      <ClientEffects />
+      <main className="container">
+        <div className="header">
+          <h1>{categoryInfo.name}</h1>
         </div>
 
-        <h3 style={{ marginBottom: '20px', fontFamily: 'Lora, serif' }}>
-          {currentPlayerName}, order the items from best to worst:
-        </h3>
-
-        {currentRanking.map((itemId, index) => {
-          const item = categoryInfo.items.find((i: any) => i.id === itemId)
-          if (!item) return null
-          return (
-            <div
-              key={itemId}
-              className="ranking-item"
-              draggable
-              onDragStart={() => handleDragStart(itemId)}
-              onDragOver={handleDragOver}
-              onDrop={() => handleDrop(index)}
-              onDragEnd={() => setDraggedItem(null)}
+        <div className="ranking-container card">
+          <div className="player-tabs">
+            <button 
+              className={`player-tab ${currentPlayer === 1 ? 'active' : ''}`}
+              onClick={() => setCurrentPlayer(1)}
             >
-              <div className="rank-number">{index + 1}</div>
-              <Image 
-                src={item.image} 
-                alt={item.name} 
-                width={60} 
-                height={60}
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = `https://via.placeholder.com/60/ccc/FFFFFF?text=X`
-                }}
-              />
-              <h4>{item.name}</h4>
-            </div>
-          )
-        })}
+              {player1Name}'s Scroll
+            </button>
+            <button 
+              className={`player-tab ${currentPlayer === 2 ? 'active' : ''}`}
+              onClick={() => setCurrentPlayer(2)}
+            >
+              {player2Name}'s Scroll
+            </button>
+          </div>
 
-        <div style={{ textAlign: 'center', marginTop: '40px' }}>
-          <Link href="/">
-            <button className="btn">← Back to the Great Hall</button>
-          </Link>
+          <h3 style={{ marginBottom: '20px', fontFamily: 'Cormorant Garamond, serif' }}>
+            {currentPlayerName}, order the items from best to worst:
+          </h3>
+
+          {currentRanking.map((itemId, index) => {
+            const item = categoryInfo.items.find((i: any) => i.id === itemId)
+            if (!item) return null
+            return (
+              <div
+                key={itemId}
+                className="ranking-item"
+                draggable
+                onDragStart={() => handleDragStart(itemId)}
+                onDragOver={handleDragOver}
+                onDrop={() => handleDrop(index)}
+                onDragEnd={() => setDraggedItem(null)}
+              >
+                <div className="rank-number">{index + 1}</div>
+                <Image 
+                  src={item.image} 
+                  alt={item.name} 
+                  width={60} 
+                  height={60}
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = `https://via.placeholder.com/60/ccc/FFFFFF?text=X`
+                  }}
+                />
+                <h4>{item.name}</h4>
+              </div>
+            )
+          })}
+          
+          <div style={{ textAlign: 'center', marginTop: '40px' }}>
+            <Link href="/">
+              <button className="primary-button">← Back to the Great Hall</button>
+            </Link>
+          </div>
         </div>
-      </div>
-    </div>
+      </main>
+    </>
   )
 }

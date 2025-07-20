@@ -116,9 +116,9 @@ export const categoryData: { [key: string]: any } = {
     items: [
       { id: 'technology', name: 'Technology/gadgets', image: '/tech.png' },
       { id: 'fine-dining', name: 'Fine dining', image: '/fine.jpg' },
-      { id: 'travel', name: 'Travel experiences', image: 'airplane.jpg' },
-      { id: 'fashion', name: 'Fashion/clothes', image: 'fashion.jpg' },
-      { id: 'home-decor', name: 'Home decor', image: 'decor.jpg' }
+      { id: 'travel', name: 'Travel experiences', image: '/airplane.jpg' },
+      { id: 'fashion', name: 'Fashion/clothes', image: '/fashion.jpg' },
+      { id: 'home-decor', name: 'Home decor', image: '/decor.jpg' }
     ]
   },
   'chores': {

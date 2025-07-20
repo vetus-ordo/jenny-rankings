@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'The Sorting of Tastes',
-  description: 'Discover whose preferences align in the wizarding world.',
+  description: 'A magical ranking of tastes.',
 }
 
 export default function RootLayout({
@@ -13,7 +13,18 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <head>
+        {/* Fonts */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Quicksand:wght@400;600&display=swap" rel="stylesheet" />
+        
+        {/* Animation Helpers */}
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+      </head>
+      <body>
+        {children}
+      </body>
     </html>
   )
 }

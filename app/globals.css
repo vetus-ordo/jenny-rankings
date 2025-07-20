@@ -1,109 +1,88 @@
-@import url('https://fonts.googleapis.com/css2?family=Uncial+Antiqua&family=Cormorant+Garamond:wght@400;700&display=swap');
-
 :root {
-  /* UI Colors */
-  --background-primary: #F8F6F9;
-  --background-card: #EAE6E0; /* A soft, warm gray/parchment */
-  --button-primary: #6A7B95; /* Muted Ravenclaw Blue */
-  --button-hover: #5A6B85;
-  --text-primary: #3D352E; /* Dark, soft brown */
+  --bg1: #F8F6F9; /* A soft, almost white lavender */
+  --bg2: #E6E0D6; /* A warm, gentle taupe */
+  --card-bg: rgba(230, 224, 214, 0.55); /* Glass panel effect */
+  --card-brd: rgba(160, 145, 123, 0.35);
+  --btn: #6A7B95;   /* Muted Ravenclaw blue */
+  --btn-hover: #5A6B85;
+  --text-primary: #4A4A4A;
   --text-secondary: #6e5b49;
-  --border-soft: rgba(160, 145, 123, 0.3);
-  --accent-maroon: #7f0909;
+  --accent-maroon: #8B4B3A; /* Soft Gryffindor red for accents */
+  --spark: #ffffff;
 }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
+html, body {
+  height: 100%;
   margin: 0;
-}
-
-body {
-  font-family: 'Cormorant Garamond', serif;
-  background-color: var(--background-primary);
+  background: linear-gradient(135deg, var(--bg1), var(--bg2));
+  font-family: 'Quicksand', sans-serif;
   color: var(--text-primary);
-  min-height: 100vh;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  cursor: url('/wand.png') 6 0, auto;
 }
 
-/* === LAYOUT & HEADER === */
+/* === GENERAL COMPONENTS === */
 .container {
-  max-width: 1200px;
+  max-width: 900px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 40px 20px;
 }
 
 .header {
   text-align: center;
   color: var(--text-primary);
-  margin-bottom: 40px;
+  margin-bottom: 50px;
 }
 
 .header h1 {
-  font-family: 'Uncial Antiqua', cursive;
+  font-family: 'Cinzel', serif;
   font-size: 3rem;
   margin-top: 10px;
   margin-bottom: 10px;
+  letter-spacing: 2px;
 }
 
-.header p {
-  font-size: 1.2rem;
-  opacity: 0.8;
-}
-
-/* === GENERAL COMPONENTS === */
-.primary-button {
-  background: var(--button-primary);
-  color: white;
-  border: none;
-  padding: 15px 30px;
-  border-radius: 50px;
-  font-size: 18px;
-  font-family: 'Cormorant Garamond', serif;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: 0 2px 8px rgba(106, 123, 149, 0.2);
-  text-decoration: none;
-  display: inline-block;
-}
-
-.primary-button:hover {
-  transform: translateY(-2px);
-  background: var(--button-hover);
-  box-shadow: 0 4px 12px rgba(106, 123, 149, 0.3);
-}
-
+/* Glassmorphic Cards */
 .card {
-  background: var(--background-card);
-  border: 1px solid var(--border-soft);
+  background: var(--card-bg);
+  border: 1px solid var(--card-brd);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px); /* For Safari */
   border-radius: 12px;
-  padding: 40px;
-  box-shadow: 0 4px 16px rgba(160, 145, 123, 0.15);
-  text-align: center;
-  margin-bottom: 30px;
+  padding: 2rem;
+  transition: transform .35s ease, box-shadow .35s ease;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.12);
+}
+
+/* Primary Button */
+.btn {
+  background: linear-gradient(135deg, var(--btn), var(--btn-hover));
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: .8rem 1.6rem;
+  cursor: pointer;
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: transform .25s, box-shadow .25s;
+}
+
+.btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.2);
 }
 
 /* === HOME PAGE === */
-.input-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: bold;
-}
-
-.input-group input {
-  width: 300px;
-  padding: 12px;
-  border: 1px solid var(--border-soft);
-  border-radius: 8px;
-  font-size: 16px;
-  max-width: 100%;
-  background-color: #fff;
-  font-family: 'Cormorant Garamond', serif;
-}
-
 .category-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 20px;
   margin: 40px 0;
 }
@@ -113,81 +92,32 @@ body {
   color: inherit;
 }
 
-.category-card {
-  background: var(--background-card);
-  border: 1px solid var(--border-soft);
-  border-radius: 12px;
-  padding: 25px;
-  box-shadow: 0 4px 16px rgba(160, 145, 123, 0.1);
-  transition: all 0.2s;
-  cursor: pointer;
-  text-align: center;
-}
-
-.category-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(160, 145, 123, 0.15);
-}
-
-.category-card h3 {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.5rem;
-  font-weight: 700;
-}
-
 /* === RANKING PAGE === */
-.ranking-container {
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.player-tabs {
-  display: flex;
-  margin-bottom: 20px;
-  gap: 10px;
-}
-
-.player-tab {
-  flex: 1;
-  padding: 15px;
-  border: 1px solid var(--border-soft);
-  border-bottom: none;
-  border-radius: 8px 8px 0 0;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.2s;
-  background: #ede4ce;
-  color: var(--text-secondary);
-}
-
-.player-tab.active {
-  background: var(--background-card);
-  color: var(--text-primary);
-  border-bottom: 1px solid var(--background-card);
-}
-
 .ranking-item {
   display: flex;
   align-items: center;
-  background: var(--background-primary);
-  border: 1px solid var(--border-soft);
-  border-radius: 12px;
-  padding: 15px;
+  padding: 1rem;
   margin: 10px 0;
   cursor: grab;
-  box-shadow: 0 2px 8px rgba(106, 123, 149, 0.1);
-  transition: all 0.2s;
+  background: rgba(255,255,255,0.4);
+  border-radius: 10px;
+  border: 1px solid var(--card-brd);
+  transition: all 0.2s ease;
 }
-
 .ranking-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(106, 123, 149, 0.15);
+  transform: scale(1.02);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
-
+.ranking-item img {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  margin-right: 15px;
+  object-fit: cover;
+}
 .ranking-item .rank-number {
   background: var(--accent-maroon);
-  color: #f0e6d2;
+  color: #fff;
   border-radius: 50%;
   width: 30px;
   height: 30px;
@@ -197,26 +127,21 @@ body {
   justify-content: center;
   font-weight: bold;
   margin-right: 15px;
-  font-size: 14px;
 }
 
-/* === RESULTS PAGE === */
-.compatibility-score {
-  font-size: 3.5rem;
-  font-family: 'Uncial Antiqua', cursive;
-  color: var(--accent-maroon);
-  margin: 20px 0;
+/* === SPARKLE EFFECT === */
+.sparkle {
+  pointer-events: none;
+  position: fixed;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--spark) 0%, transparent 70%);
+  filter: drop-shadow(0 0 6px var(--spark));
+  animation: twinkle 1.4s ease-out forwards;
+  z-index: 9999;
 }
-
-/* === RESPONSIVE DESIGN === */
-@media (max-width: 768px) {
-  .header h1 {
-    font-size: 2.5rem;
-  }
-  .input-group input {
-    width: 100%;
-  }
-  .player-tabs {
-    flex-direction: column;
-  }
+@keyframes twinkle {
+  0% { opacity: 0.9; transform: scale(0.2); }
+  100% { opacity: 0; transform: scale(1.4) translateY(-60px); }
 }
