@@ -230,6 +230,7 @@ html, body {
   border-radius: 8px;
   margin-right: 15px;
   object-fit: cover;
+  transition: transform 0.3s ease; /* <-- ADD THIS LINE */
 }
 .ranking-item .rank-number {
   background: var(--accent-primary);
@@ -243,6 +244,9 @@ html, body {
   justify-content: center;
   font-weight: bold;
   margin-right: 15px;
+}
+.ranking-item:hover img {
+  transform: scale(1.35); /* Makes the image 35% larger */
 }
 
 /* === RESULTS PAGE === */

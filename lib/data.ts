@@ -133,7 +133,7 @@ export const categoryData: { [key: string]: any } = {
     ]
   },
   'chores': {
-    name: 'Most Hated Chores',
+    name: 'Chores',
     instruction: 'Rank from Most Hated to Least Hated:',
     icon: '🧹',
     items: [

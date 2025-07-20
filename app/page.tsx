@@ -25,8 +25,8 @@ export default function Home() {
           <Image 
             src="/Sorting_Hat.png" 
             alt="The Sorting Hat"
-            width={80}
-            height={80}
+            width={120}
+            height={120}
             style={{ opacity: 0.9, marginBottom: '1rem' }}
           />
           <h1>The Sorting of Tastes</h1>
