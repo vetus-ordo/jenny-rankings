@@ -1,141 +1,150 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { categoryData } from '@/lib/data'
 import ClientEffects from '@/components/ClientEffects'
+import FinalSurprise from '@/components/FinalSurprise'
+import { createHeartBurst } from '@/lib/effects'
+
+const getPersonalizedCompatibility = (score: number) => {
+  if (score > 80) return {
+    title: "An Extraordinary Connection ✨",
+    message: "Wow. Your tastes are so in sync, it's practically magic.",
+    subtext: "Are you two sure you didn't share a Polyjuice Potion?"
+  };
+  if (score > 60) return {
+    title: "A Powerful Harmony!",
+    message: "You agree on so much. This is the kind of magic that lasts.",
+    subtext: "Definitely more than just a fleeting charm."
+  };
+   if (score > 40) return {
+    title: "A Promising Accord",
+    message: "You agree on the important things and can have fun debating the rest. A perfect balance!",
+    subtext: "The foundation is strong."
+  };
+  return {
+    title: "The Classic 'Opposites Attract'",
+    message: "Your differences could be what make things exciting. You complement each other.",
+    subtext: "Every adventure needs a little unpredictability."
+  };
+}
 
 export default function ResultsPage() {
-  const [allRankings, setAllRankings] = useState<{ [key: string]: any }>({})
-  const [player1Name, setPlayer1Name] = useState('')
-  const [player2Name, setPlayer2Name] = useState('')
-
+  const [allRankings, setAllRankings] = useState<{ [key: string]: any }>({});
+  const [player1Name, setPlayer1Name] = useState('');
+  const [player2Name, setPlayer2Name] = useState('');
+  const [revealStep, setRevealStep] = useState(0);
+  const matchRefs = useRef<(HTMLTableRowElement | null)[]>([]);
+  
   useEffect(() => {
-    setPlayer1Name(localStorage.getItem('player1') || 'Wizard 1')
-    setPlayer2Name(localStorage.getItem('player2') || 'Wizard 2')
-
-    const rankings: { [key: string]: any } = {}
+    setPlayer1Name(localStorage.getItem('player1') || 'Wizard 1');
+    setPlayer2Name(localStorage.getItem('player2') || 'Wizard 2');
+    const rankings: { [key: string]: any } = {};
     Object.keys(categoryData).forEach(category => {
-      const saved = localStorage.getItem(`rankings_${category}`)
-      if (saved) {
-        rankings[category] = JSON.parse(saved)
-      }
-    })
-    setAllRankings(rankings)
-  }, [])
+      const saved = localStorage.getItem(`rankings_${category}`);
+      if (saved) rankings[category] = JSON.parse(saved);
+    });
+    setAllRankings(rankings);
 
+    const sequence = [
+      () => setRevealStep(1),
+      () => setRevealStep(2),
+      () => {
+        setRevealStep(3);
+        setTimeout(() => {
+            matchRefs.current.forEach(ref => {
+                if (ref) createHeartBurst(ref);
+            });
+        }, 500);
+      },
+      () => setRevealStep(4),
+    ];
+    sequence.forEach((step, i) => setTimeout(step, (i + 1) * 2000));
+  }, []);
+  
   const calculateCompatibility = () => {
-    let exactMatches = 0
-    let totalComparisons = 0
-
+    let exactMatches = 0;
+    let totalComparisons = 0;
     Object.keys(allRankings).forEach(category => {
-      const ranking = allRankings[category]
+      const ranking = allRankings[category];
       if (ranking?.player1 && ranking?.player2) {
         ranking.player1.forEach((item: string, index: number) => {
           if (ranking.player2[index] === item) {
-            exactMatches++
+            exactMatches++;
           }
-          totalComparisons++
-        })
+          totalComparisons++;
+        });
       }
-    })
-
+    });
     return { 
       exactMatches, 
       totalComparisons, 
       percentage: totalComparisons > 0 ? Math.round((exactMatches / totalComparisons) * 100) : 0 
-    }
-  }
-
-  const getCompatibilityMessage = (percentage: number) => {
-    if (percentage >= 80) return { message: 'A Perfect Charm!' }
-    if (percentage >= 60) return { message: 'Outstanding!' }
-    if (percentage >= 40) return { message: 'An Acceptable Accord' }
-    if (percentage >= 20) return { message: 'Curious Potion...' }
-    return { message: 'Troll! In the dungeon!' }
-  }
-
-  const compatibility = calculateCompatibility()
-  const completedCategories = Object.keys(allRankings).filter(cat => allRankings[cat]?.player1 && allRankings[cat]?.player2)
-  const compatibilityInfo = getCompatibilityMessage(compatibility.percentage)
+    };
+  };
+  
+  const compatibility = calculateCompatibility();
+  const personalizedResult = getPersonalizedCompatibility(compatibility.percentage);
+  const completedCategories = Object.keys(allRankings).filter(cat => allRankings[cat]?.player1 && allRankings[cat]?.player2);
 
   return (
     <>
       <ClientEffects />
       <main className="container">
-        <div className="header">
-          <h1>The Final Decree</h1>
-          <p>Comparing the magical tastes of {player1Name} and {player2Name}</p>
-        </div>
+        <header className="header"><h1>The Final Decree</h1></header>
 
-        <div className="compatibility-section card">
-          <h2>Magical Compatibility</h2>
-          <div className="compatibility-score">
-            {compatibility.percentage}%
-          </div>
-          <p>
-            <strong>{compatibilityInfo.message}</strong><br />
-            You had {compatibility.exactMatches} exact matches in your rankings!
-          </p>
-        </div>
-
-        {completedCategories.length > 0 ? (
-          <div>
-            <h2 style={{ fontFamily: 'Cinzel, serif', textAlign: 'center', color: 'var(--text-primary)', marginBottom: '30px' }}>
-              Category Breakdowns
-            </h2>
-            {completedCategories.map(categoryId => {
-              const category = categoryData[categoryId as keyof typeof categoryData]
-              const ranking = allRankings[categoryId]
-              if (!category || !ranking) return null
-
-              return (
-                <div key={categoryId} className="card" style={{padding: '2rem', marginBottom: '1.5rem'}}>
-                  <h3 style={{ fontFamily: 'Cinzel, serif', marginBottom: '20px', textAlign: 'center' }}>
-                    {category.name}
-                  </h3>
-                  <table className="comparison-table">
-                    <thead>
-                      <tr>
-                        <th>Rank</th>
-                        <th>{player1Name}'s Pick</th>
-                        <th>{player2Name}'s Pick</th>
-                        <th>Accord</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {ranking.player1.map((itemId: string, index: number) => {
-                        const player1Item = category.items.find((item: any) => item.id === itemId)
-                        const player2ItemId = ranking.player2[index]
-                        const player2Item = category.items.find((item: any) => item.id === player2ItemId)
-                        const isMatch = itemId === player2ItemId
-
-                        return (
-                          <tr key={index} className={isMatch ? 'match' : 'mismatch'}>
-                            <td><strong>#{index + 1}</strong></td>
-                            <td>{player1Item?.name || 'Unknown'}</td>
-                            <td>{player2Item?.name || 'Unknown'}</td>
-                            <td style={{textAlign: 'center'}}>{isMatch ? '✨' : ''}</td>
-                          </tr>
-                        )
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              )
-            })}
-          </div>
-        ) : (
-          <div className="card">
-            <h3>No completed scrolls yet!</h3>
-            <p>Complete some rankings to see your final decree.</p>
+        {revealStep >= 1 && (
+          <div className="card compatibility-reveal">
+            <h2 style={{fontFamily: 'Cinzel'}}>Magical Compatibility</h2>
+            <div className="compatibility-score" style={{fontSize: '4rem', margin: '1rem 0'}}>{compatibility.percentage}%</div>
           </div>
         )}
 
-        <div style={{ textAlign: 'center', margin: '40px 0' }}>
-          <Link href="/">
-            <button className="primary-button">← Back to the Great Hall</button>
-          </Link>
-        </div>
+        {revealStep >= 2 && (
+          <div className="card compatibility-reveal" style={{animationDelay: '0.2s'}}>
+            <h3 style={{fontFamily: 'Cinzel'}}>{personalizedResult.title}</h3>
+            <p>{personalizedResult.message}</p>
+            <p style={{opacity: 0.7, marginTop: '1rem'}}><em>{personalizedResult.subtext}</em></p>
+          </div>
+        )}
+
+        {revealStep >= 3 && completedCategories.map((categoryId, catIndex) => {
+            const category = categoryData[categoryId];
+            const ranking = allRankings[categoryId];
+            if (!category || !ranking) return null;
+
+            return (
+              <div key={categoryId} className="card compatibility-reveal" style={{animationDelay: `${catIndex * 0.3}s`, padding: '1.5rem', marginBottom: '1.5rem'}}>
+                <h3 style={{ fontFamily: 'Cinzel', marginBottom: '1rem', textAlign: 'center' }}>{category.name}</h3>
+                <table style={{width: '100%', textAlign: 'left'}}>
+                  <thead><tr><th>Rank</th><th>{player1Name}</th><th>{player2Name}</th><th>Accord</th></tr></thead>
+                  <tbody>
+                    {ranking.player1.map((itemId: string, index: number) => {
+                      const player1Item = category.items.find((i: any) => i.id === itemId);
+                      const player2Item = category.items.find((i: any) => i.id === ranking.player2[index]);
+                      const isMatch = itemId === ranking.player2[index];
+                      return (
+                        <tr key={index} ref={el => { if(isMatch) matchRefs.current[index] = el }} className={isMatch ? 'match' : ''}>
+                          <td><strong>#{index + 1}</strong></td>
+                          <td>{player1Item?.name}</td>
+                          <td>{player2Item?.name}</td>
+                          <td style={{textAlign: 'center'}}>{isMatch ? '✨' : ''}</td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )
+        })}
+        
+        {revealStep >= 4 && <FinalSurprise />}
+
+        {revealStep >= 4 && 
+            <div style={{ textAlign: 'center', marginTop: '40px' }} className="animate__animated animate__fadeInUp">
+                <Link href="/" className="btn">Create a New Scroll</Link>
+            </div>
+        }
       </main>
     </>
   )

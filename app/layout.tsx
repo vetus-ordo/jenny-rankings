@@ -14,17 +14,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Fonts */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Quicksand:wght@400;600&display=swap" rel="stylesheet" />
-        
-        {/* Animation Helpers */}
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
       </head>
-      <body>
-        {children}
-      </body>
+      <body className="magical-bg">{children}</body>
     </html>
   )
 }

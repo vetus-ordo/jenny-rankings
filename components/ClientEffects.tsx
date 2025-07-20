@@ -9,18 +9,11 @@ export default function ClientEffects() {
       sparkle.style.left = e.clientX + 'px';
       sparkle.style.top = e.clientY + 'px';
       document.body.appendChild(sparkle);
-      setTimeout(() => {
-        sparkle.remove();
-      }, 1400);
+      setTimeout(() => sparkle.remove(), 1400);
     };
-
     document.addEventListener('pointermove', handlePointerMove);
+    return () => document.removeEventListener('pointermove', handlePointerMove);
+  }, []);
 
-    // Cleanup function to remove the event listener when the component is unmounted
-    return () => {
-      document.removeEventListener('pointermove', handlePointerMove);
-    };
-  }, []); // The empty dependency array ensures this effect runs only once
-
-  return null; // This component doesn't render any visible HTML itself
+  return null;
 }

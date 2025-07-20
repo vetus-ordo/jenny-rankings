@@ -138,7 +138,7 @@ export const categoryData: { [key: string]: any } = {
     items: [
       { id: 'cape-town', name: 'Cape Town, South Africa', image: '/sa.jpg' },
       { id: 'reykjavik', name: 'Reykjavik, Iceland', image: '/iceland.jpg' },
-      { id: 'budapest', name: 'Athens, Greece', image: '/athens.jpg' },
+      { id: 'budapest', name: 'Athens, Greece', image: '/Athens.jpg' },
       { id: 'rio', name: 'Rio de Janeiro, Brazil', image: '/brazil.jpg' },
       { id: 'bali', name: 'Bali, Indonesia', image: '/bali.jpg' }
     ]
