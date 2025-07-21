@@ -3,8 +3,8 @@ import type { Metadata } from 'next'
 import AmbientParticles from '@/components/AmbientParticles'
 
 export const metadata: Metadata = {
-  title: 'The Sorting of Tastes',
-  description: 'A magical ranking of tastes.',
+  title: 'The Sorting Hat',
+  description: 'A magical sorting system.',
 }
 
 export default function RootLayout({

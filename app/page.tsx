@@ -90,7 +90,7 @@ export default function Home() {
               height={120}
               style={{ opacity: 0.9, marginBottom: '1rem' }}
             />
-            <h1>The Sorting of Tastes</h1>
+            <h1>The Sorting Hat</h1>
           </header>
 
           <section>
