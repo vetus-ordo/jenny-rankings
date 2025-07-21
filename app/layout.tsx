@@ -1,6 +1,6 @@
 import './globals.css'
 import type { Metadata } from 'next'
-import { Analytics } from '@vercel/analytics/next'; // <-- 1. IMPORT IT
+import AmbientParticles from '@/components/AmbientParticles'
 
 export const metadata: Metadata = {
   title: 'The Sorting of Tastes',
@@ -21,8 +21,8 @@ export default function RootLayout({
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
       </head>
       <body className="magical-bg">
+        <AmbientParticles />
         {children}
-        <Analytics /> {/* <-- 2. ADD THE COMPONENT HERE */}
       </body>
     </html>
   )

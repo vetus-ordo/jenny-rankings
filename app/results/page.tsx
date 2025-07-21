@@ -9,11 +9,16 @@ import { createHeartBurst } from '@/lib/effects'
 import { database } from '@/firebase'
 import { ref, onValue, remove } from "firebase/database";
 
+type RankingCategory = {
+  player1: string[];
+  player2: string[];
+};
+
 const getPersonalizedCompatibility = (score: number) => {
   if (score > 80) return {
     title: "An Extraordinary Connection ✨",
     message: "Wow. Our tastes are so in sync, it's practically magic.",
-    subtext: "Are we sure we didn't share a Love Potion?"
+    subtext: "Are we sure we didn't share a Polyjuice Potion?"
   };
   if (score > 60) return {
     title: "A Powerful Harmony!",
@@ -49,7 +54,7 @@ const calculateCategoryScore = (player1Ranks: string[], player2Ranks: string[]) 
 
 export default function ResultsPage() {
   const router = useRouter();
-  const [allRankings, setAllRankings] = useState<{ [key: string]: any }>({});
+  const [allRankings, setAllRankings] = useState<Record<string, RankingCategory>>({});
   const [player1Name, setPlayer1Name] = useState('');
   const [player2Name, setPlayer2Name] = useState('');
   const [overallScore, setOverallScore] = useState(0);
@@ -59,26 +64,33 @@ export default function ResultsPage() {
   useEffect(() => {
     setPlayer1Name(localStorage.getItem('player1') || 'Wizard 1');
     setPlayer2Name(localStorage.getItem('player2') || 'Wizard 2');
-    
+
     const rankingsRef = ref(database, 'rankings/');
     const unsubscribe = onValue(rankingsRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
         setAllRankings(data);
-        const completed = Object.values(data).filter((r: any) => r.player1 && r.player2);
-        if (completed.length > 0) {
-            // --- THIS SECTION NOW USES YOUR PREFERRED EXPLICIT TYPING ---
-            const totalUserScore = completed.reduce((sum: number, r: any) => {
-              const categoryScores = calculateCategoryScore(r.player1, r.player2);
-              return sum + categoryScores.userScore;
-            }, 0);
 
-            const totalMaxScore = completed.reduce((sum: number, r: any) => sum + r.player1.length * 3, 0);
-            
-            const finalPercentage = totalMaxScore > 0 ? Math.round((totalUserScore / totalMaxScore) * 100) : 0;
-            setOverallScore(finalPercentage);
+        // --- TypeScript-safe: filter is a type predicate ---
+        const completed = Object.values(data)
+          .filter((r): r is RankingCategory => 
+            !!r && 
+            Array.isArray((r as any).player1) && 
+            Array.isArray((r as any).player2)
+          );
+
+        if (completed.length > 0) {
+          const totalUserScore = completed.reduce((sum: number, r: RankingCategory) => {
+            const categoryScores = calculateCategoryScore(r.player1, r.player2);
+            return sum + categoryScores.userScore;
+          }, 0);
+
+          const totalMaxScore = completed.reduce((sum: number, r: RankingCategory) => sum + r.player1.length * 3, 0);
+
+          const finalPercentage = totalMaxScore > 0 ? Math.round((totalUserScore / totalMaxScore) * 100) : 0;
+          setOverallScore(finalPercentage);
         } else {
-            setOverallScore(0);
+          setOverallScore(0);
         }
       } else {
         setAllRankings({});
@@ -86,9 +98,15 @@ export default function ResultsPage() {
       }
     });
 
+    // Reveal sequence control
     const sequence = [
       () => setRevealStep(1), () => setRevealStep(2),
-      () => { setRevealStep(3); setTimeout(() => { matchRefs.current.forEach(ref => { if (ref) createHeartBurst(ref); }); }, 500); },
+      () => { 
+        setRevealStep(3);
+        setTimeout(() => { 
+          matchRefs.current.forEach(ref => { if (ref) createHeartBurst(ref); }); 
+        }, 500);
+      },
       () => setRevealStep(4),
     ];
     sequence.forEach((step, i) => setTimeout(step, (i + 1) * 2000));
@@ -100,12 +118,20 @@ export default function ResultsPage() {
     if (confirm("Are you sure you want to start a new game? This will erase all current rankings.")) {
       const rankingsRef = ref(database, 'rankings/');
       remove(rankingsRef);
+
+      Object.keys(categoryData).forEach(categoryKey => {
+        localStorage.removeItem(`rankings_${categoryKey}`);
+      });
+
       router.push('/');
     }
   };
   
   const personalizedResult = getPersonalizedCompatibility(overallScore);
   const completedCategories = Object.keys(allRankings).filter(cat => allRankings[cat]?.player1 && allRankings[cat]?.player2);
+
+  // Clear matchRefs for the next render, so refs accumulate correctly
+  matchRefs.current = [];
 
   return (
     <>
@@ -129,48 +155,50 @@ export default function ResultsPage() {
         )}
 
         {revealStep >= 3 && completedCategories.map((categoryId, catIndex) => {
-            const category = categoryData[categoryId];
-            const ranking = allRankings[categoryId];
-            if (!category || !ranking) return null;
-            const categoryScores = calculateCategoryScore(ranking.player1, ranking.player2);
-            const categoryPercentage = categoryScores.maxScore > 0 ? Math.round((categoryScores.userScore / categoryScores.maxScore) * 100) : 0;
+          const category = categoryData[categoryId];
+          const ranking = allRankings[categoryId];
+          if (!category || !ranking) return null;
+          const categoryScores = calculateCategoryScore(ranking.player1, ranking.player2);
+          const categoryPercentage = categoryScores.maxScore > 0 ? Math.round((categoryScores.userScore / categoryScores.maxScore) * 100) : 0;
 
-            return (
-              <div key={categoryId} className="card compatibility-reveal" style={{animationDelay: `${catIndex * 0.3}s`, padding: '1.5rem', marginBottom: '1.5rem'}}>
-                <h3 style={{ fontFamily: 'Cinzel', marginBottom: '1rem', textAlign: 'center' }}>
-                  {category.name}
-                  <span className="category-score">({categoryPercentage}%)</span>
-                </h3>
-                <table style={{width: '100%', textAlign: 'left'}}>
-                  <thead>
-                    <tr>
-                      <th style={{width: '15%'}}>Rank</th>
-                      <th>{player1Name}</th>
-                      <th>{player2Name}</th>
-                      <th style={{width: '15%', textAlign: 'center'}}>Accord</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {ranking.player1.map((itemId: string, index: number) => {
-                      const player1Item = category.items.find((i: any) => i.id === itemId);
-                      const player2Item = category.items.find((i: any) => i.id === ranking.player2[index]);
-                      const isMatch = itemId === ranking.player2[index];
-                      const isPerfectMatch = isMatch && index === 0;
-                      const ref = isMatch ? (el: HTMLTableRowElement | null) => { if(el) matchRefs.current.push(el) } : null;
+          return (
+            <div key={categoryId} className="card compatibility-reveal" style={{animationDelay: `${catIndex * 0.3}s`, padding: '1.5rem', marginBottom: '1.5rem'}}>
+              <h3 style={{ fontFamily: 'Cinzel', marginBottom: '1rem', textAlign: 'center' }}>
+                {category.name}
+                <span className="category-score">({categoryPercentage}%)</span>
+              </h3>
+              <table style={{width: '100%', textAlign: 'left'}}>
+                <thead>
+                  <tr>
+                    <th style={{width: '15%'}}>Rank</th>
+                    <th>{player1Name}</th>
+                    <th>{player2Name}</th>
+                    <th style={{width: '15%', textAlign: 'center'}}>Accord</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ranking.player1.map((itemId: string, index: number) => {
+                    const player1Item = category.items.find((i: any) => i.id === itemId);
+                    const player2Item = category.items.find((i: any) => i.id === ranking.player2[index]);
+                    const isMatch = itemId === ranking.player2[index];
+                    const isPerfectMatch = isMatch && index === 0;
 
-                      return (
-                        <tr key={index} ref={ref} className={isPerfectMatch ? 'perfect-match' : (isMatch ? 'match' : '')}>
-                          <td><strong>#{index + 1}</strong></td>
-                          <td>{player1Item?.name || '...'}</td>
-                          <td>{player2Item?.name || '...'}</td>
-                          <td style={{textAlign: 'center'}}>{isMatch ? (isPerfectMatch ? '🏆' : '✨') : ''}</td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )
+                    // Push matching table rows to refs to use in heart burst effect
+                    const ref = isMatch ? (el: HTMLTableRowElement | null) => { if(el) matchRefs.current.push(el) } : null;
+
+                    return (
+                      <tr key={index} ref={ref} className={isPerfectMatch ? 'perfect-match' : (isMatch ? 'match' : '')}>
+                        <td><strong>#{index + 1}</strong></td>
+                        <td>{player1Item?.name || '...'}</td>
+                        <td>{player2Item?.name || '...'}</td>
+                        <td style={{textAlign: 'center'}}>{isMatch ? (isPerfectMatch ? '🏆' : '✨') : ''}</td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )
         })}
         
         {revealStep >= 4 && <FinalSurprise />}

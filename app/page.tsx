@@ -1,42 +1,53 @@
 'use client'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { categoryData } from '@/lib/data'
 import ClientEffects from '@/components/ClientEffects'
+import ProgressIndicator from '@/components/ProgressIndicator'
 
 export default function Home() {
   const [showWelcome, setShowWelcome] = useState(true);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  // The names are now hardcoded here for a personalized gift.
   const player1Name = "Jenny";
   const player2Name = "Andrew";
 
-  // This effect adds/removes the dark background class
-  useEffect(() => {
-    document.body.classList.add('welcome-active');
-  }, []);
-
+  // This effect runs once to save the names for the other pages to use.
   useEffect(() => {
     localStorage.setItem('player1', player1Name);
     localStorage.setItem('player2', player2Name);
   }, [player1Name, player2Name]);
 
+  // This function will be called when she clicks the welcome screen
   const handleEnter = () => {
-    // Remove the dark background class for a smooth transition
-    document.body.classList.remove('welcome-active');
-    
     setShowWelcome(false);
+    // Try to play the music
     audioRef.current?.play().catch(error => {
       console.error("Audio autoplay failed:", error);
     });
   };
 
+  // Calculate the number of completed categories
+  const completedCount = useMemo(() => {
+    if (typeof window === 'undefined') return 0; // Guard against running on the server
+    
+    return Object.keys(categoryData).filter(key => {
+      const rankings = JSON.parse(localStorage.getItem(`rankings_${key}`) || '{}');
+      return rankings.player1 && rankings.player2;
+    }).length;
+  }, []);
+
+  const totalCategories = Object.keys(categoryData).length;
+
   return (
     <>
+      {/* The audio player is controlled by our code, not autoplaying */}
       <audio ref={audioRef} src="/hedwig.mp3" loop />
       <ClientEffects />
 
+      {/* --- The Stunning Welcome Screen --- */}
       {showWelcome && (
         <div 
           className="welcome-overlay"
@@ -68,6 +79,7 @@ export default function Home() {
         </div>
       )}
 
+      {/* The main content of the page, hidden until she clicks enter */}
       {!showWelcome && (
         <main className="container animate__animated animate__fadeIn">
           <header className="header">
@@ -78,16 +90,19 @@ export default function Home() {
               height={120}
               style={{ opacity: 0.9, marginBottom: '1rem' }}
             />
-            <h1>The Sorting Hat</h1>
+            <h1>The Sorting of Tastes</h1>
           </header>
+
           <section>
             <div className="header">
               <p style={{ fontFamily: 'Cinzel', fontSize: '1.5rem' }}>A Magical Comparison for</p>
               <p style={{ fontFamily: 'Cinzel', fontSize: '2rem', marginTop: '0.5rem' }}>
                 {player1Name} & {player2Name}
               </p>
-              <p style={{marginTop: '1rem'}}>Choose a category to begin.</p>
             </div>
+
+            <ProgressIndicator completed={completedCount} total={totalCategories} />
+
             <div className="category-grid">
               {Object.entries(categoryData).map(([id, category], index) => (
                 <Link key={id} href={`/rank/${id}`} passHref>
