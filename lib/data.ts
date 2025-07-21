@@ -203,5 +203,17 @@ export const categoryData: { [key: string]: any } = {
       { id: 'annoying-stranger', name: 'Always have a prominent stain on your shirt', image: '/stain.jpg' },
       { id: 'stranger-bank', name: 'Gain 100 pounds for a year', image: '/fat.jpg' }
     ]
-  }
+  },
+  'morally-questionable': {
+  name: 'Morally Questionable',
+  instruction: 'Rank from "I might do this in an emergency" to "Never ever":',
+  icon: '😇',
+  items: [
+    { id: 'handicapped-spot', name: 'Park in a handicapped spot', image: '/handicapped.png' },
+    { id: 'carpool-alone', name: 'Drive in the carpool lane alone', image: '/carpool.png' },
+    { id: 'no-tip', name: '$0 tip for the server', image: '/tip.jpg' },
+    { id: 'cart-ditch', name: 'Leave your shopping cart in the middle of the lot', image: '/cart.png' },
+    { id: 'used-return', name: 'Return something you broke and pretend it was defective', image: '/return.png' }
+  ]
+}
 };
