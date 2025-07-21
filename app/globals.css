@@ -38,7 +38,6 @@ html, body {
   background: url('/golden-snitch.png') repeat;
   background-size: 30px;
   opacity: 0.03;
-  animation: float 40s infinite linear;
   pointer-events: none;
   z-index: -1;
 }

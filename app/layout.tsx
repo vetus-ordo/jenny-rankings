@@ -2,8 +2,8 @@ import './globals.css'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'The Sorting Hat',
-  description: 'A magical comparison for Jenny and Andrew.',
+  title: 'The Sorting of Tastes',
+  description: 'A magical ranking of tastes.',
 }
 
 export default function RootLayout({
@@ -19,7 +19,13 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Quicksand:wght@400;600&display=swap" rel="stylesheet" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
       </head>
-      <body className="magical-bg">{children}</body>
+      <body className="magical-bg">
+        {/* --- ADD THIS AUDIO PLAYER --- */}
+        <audio src="/hedwig.mp3" autoPlay loop style={{ display: 'none' }} />
+        {/* --------------------------- */}
+        
+        {children}
+      </body>
     </html>
   )
 }
