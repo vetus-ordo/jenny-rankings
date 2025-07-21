@@ -16,19 +16,17 @@ export default function Home() {
   const player1Name = "Jenny";
   const player2Name = "Andrew";
 
-  // Calculate progress from localStorage
   const calculateProgress = useCallback(() => {
     if (typeof window === 'undefined') return 0;
-    
+
     const count = Object.keys(categoryData).filter(key => {
       const rankings = JSON.parse(localStorage.getItem(`rankings_${key}`) || '{}');
       return rankings.player1 && rankings.player2;
     }).length;
-    
+
     return count;
   }, []);
 
-  // Update progress state
   const updateProgress = useCallback(() => {
     const newCount = calculateProgress();
     setCompletedCount(newCount);
@@ -36,35 +34,23 @@ export default function Home() {
 
   useEffect(() => {
     setIsClient(true);
-    
-    // Initial progress calculation
     updateProgress();
 
-    // Save player names to localStorage for other pages to use
     localStorage.setItem('player1', player1Name);
     localStorage.setItem('player2', player2Name);
 
-    // If we've seen the welcome screen in this session, hide it
     if (sessionStorage.getItem('welcomeScreenShown') === 'true') {
       setShowWelcome(false);
     }
 
-    // Listen for storage changes from other tabs
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key && e.key.startsWith('rankings_')) {
         updateProgress();
       }
     };
 
-    // Listen for custom events (same-tab changes)
-    const handleRankingsUpdate = () => {
-      updateProgress();
-    };
-
-    // Listen for focus events to catch changes when returning to tab
-    const handleFocus = () => {
-      updateProgress();
-    };
+    const handleRankingsUpdate = () => updateProgress();
+    const handleFocus = () => updateProgress();
 
     window.addEventListener('storage', handleStorageChange);
     window.addEventListener('rankingsUpdated', handleRankingsUpdate);
@@ -80,7 +66,7 @@ export default function Home() {
   const handleEnter = () => {
     setShowWelcome(false);
     sessionStorage.setItem('welcomeScreenShown', 'true');
-    
+
     audioRef.current?.play().catch(error => {
       console.error("Audio autoplay failed:", error);
     });
@@ -94,7 +80,7 @@ export default function Home() {
       <ClientEffects />
 
       {showWelcome && (
-        <div 
+        <div
           className="welcome-overlay"
           onClick={handleEnter}
           style={{ cursor: 'pointer' }}
@@ -127,8 +113,8 @@ export default function Home() {
       {!showWelcome && (
         <main className="container animate__animated animate__fadeIn">
           <header className="header">
-            <Image 
-              src="/Sorting_Hat.png" 
+            <Image
+              src="/Sorting_Hat.png"
               alt="The Sorting Hat"
               width={120}
               height={120}
@@ -146,8 +132,8 @@ export default function Home() {
             </div>
 
             {isClient && (
-              <ProgressIndicator 
-                completed={completedCount} 
+              <ProgressIndicator
+                completed={completedCount}
                 total={totalCategories}
               />
             )}
@@ -157,6 +143,10 @@ export default function Home() {
                 <Link key={id} href={`/rank/${id}`} passHref>
                   <div className="card animate__animated animate__fadeInUp" style={{ animationDelay: `${index * 0.05}s`, padding: '1.5rem' }}>
                     <h3 style={{ fontFamily: 'Cinzel' }}>{category.name}</h3>
+                    {/* This div adds the smoke effect on hover */}
+                    <div className="card-smoke-container">
+                      {[...Array(5)].map((_, i) => <div key={i} className="card-smoke-particle" />)}
+                    </div>
                   </div>
                 </Link>
               ))}

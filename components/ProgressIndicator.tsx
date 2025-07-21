@@ -25,10 +25,7 @@ export default function ProgressIndicator({ completed, total }: ProgressIndicato
       const animate = () => {
         const elapsed = Date.now() - startTime;
         const progress = Math.min(elapsed / duration, 1);
-
-        // Easing function (ease-out cubic)
         const easeOut = 1 - Math.pow(1 - progress, 3);
-
         const currentPercentage = startPercentage + (endPercentage - startPercentage) * easeOut;
         setAnimatedPercentage(currentPercentage);
 
@@ -39,7 +36,6 @@ export default function ProgressIndicator({ completed, total }: ProgressIndicato
           setTimeout(() => setShowCelebration(false), 2000);
         }
       };
-
       requestAnimationFrame(animate);
     };
 
@@ -49,7 +45,6 @@ export default function ProgressIndicator({ completed, total }: ProgressIndicato
     }
   }, [completed, total, prevCompleted, targetPercentage, isCompleted, showCelebration]);
 
-  // Initialize on mount
   useEffect(() => {
     setAnimatedPercentage(targetPercentage);
     setPrevCompleted(completed);
@@ -71,12 +66,25 @@ export default function ProgressIndicator({ completed, total }: ProgressIndicato
         <div className="progress-track">
           <div
             className="progress-fill"
-            style={{
-              width: `${animatedPercentage}%`,
-            } as React.CSSProperties}
+            style={{ width: `${animatedPercentage}%` } as React.CSSProperties}
           >
             <div className="progress-shimmer"></div>
             <div className="progress-glow"></div>
+            
+            {/* SMOKE EFFECT CONTAINER */}
+            <div className="progress-smoke">
+              {[...Array(5)].map((_, i) => (
+                <div
+                  key={i}
+                  className="smoke-particle"
+                  style={{
+                    left: `${Math.random() * 90}%`,
+                    animationDelay: `${Math.random() * 4}s`,
+                  }}
+                />
+              ))}
+            </div>
+
           </div>
         </div>
 
@@ -85,7 +93,7 @@ export default function ProgressIndicator({ completed, total }: ProgressIndicato
         </div>
       </div>
 
-      {/* Sparkle effects for completion milestones */}
+      {/* SPARKLE (TWINKLE) EFFECTS */}
       {completed > 0 && (
         <div className="progress-sparkles">
           {[...Array(Math.min(completed, 8))].map((_, i) => (
@@ -103,7 +111,7 @@ export default function ProgressIndicator({ completed, total }: ProgressIndicato
         </div>
       )}
 
-      {/* Celebration confetti */}
+      {/* CELEBRATION CONFETTI */}
       {showCelebration && (
         <div className="celebration-confetti">
           {[...Array(20)].map((_, i) => (
