@@ -1,6 +1,6 @@
 // lib/data.ts
 export const categoryData: { [key: string]: any } = {
-  'milk-tea': {
+  'Boba': {
     name: 'Boba',
     instruction: 'Rank from Favorite to Least Favorite:',
     icon: '🧋',
@@ -26,7 +26,7 @@ export const categoryData: { [key: string]: any } = {
   },
   'burgers': {
     name: 'Fast Food',
-    instruction: 'Rank from "I could eat this everyday" to "Ugh barf":',
+    instruction: 'Rank from "I could eat this everyday" to "Pass":',
     icon: '🍔',
     items: [
       { id: 'mcdonalds', name: "McDonald's", image: '/mcd.png' },
@@ -37,8 +37,8 @@ export const categoryData: { [key: string]: any } = {
     ]
   },
   'ice-cream': {
-    name: 'Ice Cream Flavors',
-    instruction: 'Rank from Most Delicious to Least:',
+    name: 'Ice Cream',
+    instruction: 'Rank from "First Scoop I\’d Grab" to "I Could Skip It":',
     icon: '🍦',
     items: [
       { id: 'dark-mint', name: 'Dark Mint Stracciatella', image: '/mint.png' },
@@ -49,7 +49,7 @@ export const categoryData: { [key: string]: any } = {
     ]
   },
   'celebrities': {
-    name: 'Jenny\'s Male Celebrity Tastes',
+    name: 'Jenny\'s Celebrity Tastes',
     instruction: 'Rank from Most to Least Handsome (Andrew will try to guess Jenny\'s):',
     icon: '⭐',
     items: [
@@ -62,7 +62,7 @@ export const categoryData: { [key: string]: any } = {
   },
   'colors': {
     name: 'Your Colors',
-    instruction: 'Rank from Favorite to Least Favorite:',
+    instruction: 'Rank from Favorite to Least Favorite (Andrew will try to guess Jenny\'s):',
     icon: '🎨',
     items: [
       { id: 'taupe', name: 'Taupe', image: '/taupe.png' },
