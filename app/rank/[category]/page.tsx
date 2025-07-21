@@ -24,7 +24,6 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 
-// --- Strongly type our items for perfect type safety ---
 type RankableItem = {
   id: string;
   name: string;
@@ -70,10 +69,15 @@ export default function RankingPage() {
 
     if (!category) return;
 
+    // Listen to Firebase for real-time updates
     const rankingsRef = ref(database, `rankings/${category}`);
     const unsubscribe = onValue(rankingsRef, (snapshot) => {
       const data = snapshot.val();
-      setRankings(data || {});
+      if (data) {
+        setRankings(data);
+        // Also update localStorage when Firebase data comes in
+        localStorage.setItem(`rankings_${category}`, JSON.stringify(data));
+      }
     });
 
     return () => unsubscribe();
@@ -81,40 +85,22 @@ export default function RankingPage() {
 
   const categoryInfo = categoryData[category];
 
-  // Defensive: is items array present?
   if (!categoryInfo || !Array.isArray(categoryInfo.items) || categoryInfo.items.length === 0) {
     return <main className="container header"><h1>Category Not Found or has no items!</h1></main>
   }
 
-  // Sensible drag sensors:
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
 
-  // Helper: show debugging info for fixing data mismatches
-  // REMOVE IN PRODUCTION
-  if (typeof window !== "undefined") {
-    // Print for debugging only if you're stuck!
-    // console.log('category:', categoryInfo.name, 'items:', categoryInfo.items);
-  }
-
-  // Memoized helper to render one sortable list (for each player)
   const renderRankingList = useCallback((playerKey: 'player1' | 'player2') => {
     const playerName = playerKey === 'player1' ? player1Name : player2Name;
-
-    // Ensure rankings structure is correct *and* fallback safely
     const currentList: string[] =
       (Array.isArray(rankings[playerKey]) && rankings[playerKey].length > 0)
         ? rankings[playerKey]
         : categoryInfo.items.map((item: RankableItem) => item.id);
 
-    // Guarantee we find full item data for every id!
     const itemsWithData: (RankableItem & { rank: number })[] = currentList.map((id, idx) => {
       const itemData = categoryInfo.items.find((it: RankableItem) => it.id === id);
       if (!itemData) {
-        // Warn if something is missing/mismatched with IDs!
-        if (typeof window !== "undefined") {
-          // console.warn('ID not in items array: ', id, categoryInfo.items.map(i => i.id));
-        }
-        // fallback to blank, so nothing breaks UI
         return {
           id, name: '(unknown)', image: '', rank: idx + 1,
         };
@@ -122,7 +108,6 @@ export default function RankingPage() {
       return { ...itemData, rank: idx + 1 };
     });
 
-    // Per-column DND handler
     const handleColumnDragEnd = (event: DragEndEvent) => {
       const { active, over } = event;
       if (!over || active.id === over.id) return;
@@ -131,7 +116,15 @@ export default function RankingPage() {
       const newIndex = currentList.indexOf(over.id as string);
       const newList = arrayMove(currentList, oldIndex, newIndex);
       const newRankings = { ...rankings, [playerKey]: newList };
+      
+      // Save to Firebase
       set(ref(database, `rankings/${category}`), newRankings);
+      
+      // **Save to localStorage to trigger progress bar update**
+      localStorage.setItem(`rankings_${category}`, JSON.stringify(newRankings));
+
+      // Dispatch event for same-tab updates on the homepage
+      window.dispatchEvent(new Event('rankingsUpdated'));
     };
 
     return (

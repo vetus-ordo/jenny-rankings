@@ -1,5 +1,6 @@
 'use client'
-import { useState, useEffect, useRef, useMemo } from 'react'
+
+import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { categoryData } from '@/lib/data'
@@ -8,40 +9,82 @@ import ProgressIndicator from '@/components/ProgressIndicator'
 
 export default function Home() {
   const [showWelcome, setShowWelcome] = useState(true);
+  const [completedCount, setCompletedCount] = useState(0);
+  const [isClient, setIsClient] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const player1Name = "Jenny";
   const player2Name = "Andrew";
 
+  // Calculate progress from localStorage
+  const calculateProgress = useCallback(() => {
+    if (typeof window === 'undefined') return 0;
+    
+    const count = Object.keys(categoryData).filter(key => {
+      const rankings = JSON.parse(localStorage.getItem(`rankings_${key}`) || '{}');
+      return rankings.player1 && rankings.player2;
+    }).length;
+    
+    return count;
+  }, []);
+
+  // Update progress state
+  const updateProgress = useCallback(() => {
+    const newCount = calculateProgress();
+    setCompletedCount(newCount);
+  }, [calculateProgress]);
+
   useEffect(() => {
+    setIsClient(true);
+    
+    // Initial progress calculation
+    updateProgress();
+
+    // Save player names to localStorage for other pages to use
+    localStorage.setItem('player1', player1Name);
+    localStorage.setItem('player2', player2Name);
+
     // If we've seen the welcome screen in this session, hide it
     if (sessionStorage.getItem('welcomeScreenShown') === 'true') {
       setShowWelcome(false);
     }
 
-    // Save player names to localStorage for other pages to use
-    localStorage.setItem('player1', player1Name);
-    localStorage.setItem('player2', player2Name);
-  }, []); // Empty dependency array so this runs only once
+    // Listen for storage changes from other tabs
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key && e.key.startsWith('rankings_')) {
+        updateProgress();
+      }
+    };
+
+    // Listen for custom events (same-tab changes)
+    const handleRankingsUpdate = () => {
+      updateProgress();
+    };
+
+    // Listen for focus events to catch changes when returning to tab
+    const handleFocus = () => {
+      updateProgress();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('rankingsUpdated', handleRankingsUpdate);
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('rankingsUpdated', handleRankingsUpdate);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [updateProgress]);
 
   const handleEnter = () => {
     setShowWelcome(false);
-    // Remember that we've shown the welcome screen for this session
     sessionStorage.setItem('welcomeScreenShown', 'true');
     
     audioRef.current?.play().catch(error => {
       console.error("Audio autoplay failed:", error);
     });
   };
-
-  const completedCount = useMemo(() => {
-    if (typeof window === 'undefined') return 0;
-    
-    return Object.keys(categoryData).filter(key => {
-      const rankings = JSON.parse(localStorage.getItem(`rankings_${key}`) || '{}');
-      return rankings.player1 && rankings.player2;
-    }).length;
-  }, []);
 
   const totalCategories = Object.keys(categoryData).length;
 
@@ -102,7 +145,12 @@ export default function Home() {
               </p>
             </div>
 
-            <ProgressIndicator completed={completedCount} total={totalCategories} />
+            {isClient && (
+              <ProgressIndicator 
+                completed={completedCount} 
+                total={totalCategories}
+              />
+            )}
 
             <div className="category-grid">
               {Object.entries(categoryData).map(([id, category], index) => (
