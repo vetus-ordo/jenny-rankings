@@ -9,7 +9,7 @@ import { createHeartBurst } from '@/lib/effects'
 const getPersonalizedCompatibility = (score: number) => {
   if (score > 80) return {
     title: "An Extraordinary Connection ✨",
-    message: "Wow. Our tastes are so in sync, it's practically magic.",
+    message: "Wow. We\'re so in sync, it's practically magic.",
     subtext: "Are you sure we didn't share a Polyjuice Potion?"
   };
   if (score > 60) return {
