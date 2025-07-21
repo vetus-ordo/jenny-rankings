@@ -2,8 +2,8 @@ import './globals.css'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'The Sorting of Tastes',
-  description: 'A magical ranking of tastes.',
+  title: 'The Sorting Hat',
+  description: 'A magical comparison for Jenny and Andrew.',
 }
 
 export default function RootLayout({
