@@ -67,14 +67,22 @@ export default function ResultsPage() {
         setAllRankings(data);
         const completed = Object.values(data).filter((r: any) => r.player1 && r.player2);
         if (completed.length > 0) {
-            const totalUserScore = completed.reduce((sum, r: any) => {
-            const categoryScores = calculateCategoryScore(r.player1, r.player2);
-            return sum + categoryScores.userScore;
+            // --- THIS SECTION NOW USES YOUR PREFERRED EXPLICIT TYPING ---
+            const totalUserScore = completed.reduce((sum: number, r: any) => {
+              const categoryScores = calculateCategoryScore(r.player1, r.player2);
+              return sum + categoryScores.userScore;
             }, 0);
-            const totalMaxScore = completed.reduce((sum, r: any) => sum + r.player1.length * 3, 0);
+
+            const totalMaxScore = completed.reduce((sum: number, r: any) => sum + r.player1.length * 3, 0);
+            
             const finalPercentage = totalMaxScore > 0 ? Math.round((totalUserScore / totalMaxScore) * 100) : 0;
             setOverallScore(finalPercentage);
+        } else {
+            setOverallScore(0);
         }
+      } else {
+        setAllRankings({});
+        setOverallScore(0);
       }
     });
 
