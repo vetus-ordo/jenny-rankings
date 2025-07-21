@@ -13,7 +13,7 @@ const getPersonalizedCompatibility = (score: number) => {
   if (score > 80) return {
     title: "An Extraordinary Connection ✨",
     message: "Wow. Our tastes are so in sync, it's practically magic.",
-    subtext: "Are we sure we didn't share a Polyjuice Potion?"
+    subtext: "Are we sure we didn't share a Love Potion?"
   };
   if (score > 60) return {
     title: "A Powerful Harmony!",
