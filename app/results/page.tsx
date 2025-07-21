@@ -5,114 +5,102 @@ import { categoryData } from '@/lib/data'
 import ClientEffects from '@/components/ClientEffects'
 import FinalSurprise from '@/components/FinalSurprise'
 import { createHeartBurst } from '@/lib/effects'
-import { database } from '@/firebase' // Import the database connection
-import { ref, onValue } from "firebase/database"; // Import Firebase functions
+import { database } from '@/firebase'
+import { ref, onValue } from "firebase/database";
 
 const getPersonalizedCompatibility = (score: number) => {
   if (score > 80) return {
     title: "An Extraordinary Connection ✨",
-    message: "Wow. Your tastes are so in sync, it's practically magic.",
-    subtext: "Are you two sure you didn't share a Polyjuice Potion?"
+    message: "Wow. Our tastes are so in sync, it's practically magic.",
+    subtext: "Are we sure we didn't share a Polyjuice Potion?"
   };
   if (score > 60) return {
     title: "A Powerful Harmony!",
-    message: "You agree on so much. This is the kind of magic that lasts.",
-    subtext: "Definitely more than just a fleeting charm."
+    message: "We agree on so much! This is the kind of magic that lasts.",
+    subtext: "This is definitely more than just a fleeting charm."
   };
    if (score > 40) return {
     title: "A Promising Accord",
-    message: "You agree on the important things and can have fun debating the rest. A perfect balance!",
-    subtext: "The foundation is strong."
+    message: "We agree on the important things and have fun debating the rest. What a perfect balance!",
+    subtext: "Our foundation is strong."
   };
   return {
-    title: "The Classic 'Opposites Attract'",
-    message: "Your differences could be what make things exciting. You complement each other.",
+    title: "The Classic 'Oppotistes Attract'",
+    message: "Our differences are what make things exciting. We perfectly complement each other.",
     subtext: "Every adventure needs a little unpredictability."
   };
+}
+
+// CORRECTED: This now returns a raw score and the max possible score for a category
+const calculateCategoryScore = (player1Ranks: string[], player2Ranks: string[]) => {
+  if (!player1Ranks || !player2Ranks) return { userScore: 0, maxScore: 0 };
+  
+  let userScore = 0;
+  const numItems = player1Ranks.length;
+  const maxScore = numItems * 3; // 3 points per item is the max
+
+  player1Ranks.forEach((p1_item, p1_index) => {
+    const p2_index = player2Ranks.indexOf(p1_item);
+    if (p2_index !== -1) {
+      const distance = Math.abs(p1_index - p2_index);
+      userScore += Math.max(0, 3 - distance); // Proximity scoring
+    }
+  });
+
+  return { userScore, maxScore };
 }
 
 export default function ResultsPage() {
   const [allRankings, setAllRankings] = useState<{ [key: string]: any }>({});
   const [player1Name, setPlayer1Name] = useState('');
   const [player2Name, setPlayer2Name] = useState('');
+  const [overallScore, setOverallScore] = useState(0);
   const [revealStep, setRevealStep] = useState(0);
   const matchRefs = useRef<(HTMLTableRowElement | null)[]>([]);
 
   useEffect(() => {
-    // Get player names from localStorage (this doesn't need to be real-time)
     setPlayer1Name(localStorage.getItem('player1') || 'Wizard 1');
     setPlayer2Name(localStorage.getItem('player2') || 'Wizard 2');
-
-    // --- NEW: This now listens for real-time updates from Firebase ---
+    
     const rankingsRef = ref(database, 'rankings/');
     const unsubscribe = onValue(rankingsRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
         setAllRankings(data);
+
+        // CORRECTED: Simplified and more accurate overall score calculation
+        const completed = Object.values(data).filter((r: any) => r.player1 && r.player2);
+        
+        let totalUserScore = 0;
+        let totalMaxScore = 0;
+
+        completed.forEach((r: any) => {
+          const categoryScores = calculateCategoryScore(r.player1, r.player2);
+          totalUserScore += categoryScores.userScore;
+          totalMaxScore += categoryScores.maxScore;
+        });
+
+        const finalPercentage = totalMaxScore > 0 ? Math.round((totalUserScore / totalMaxScore) * 100) : 0;
+        setOverallScore(finalPercentage);
       }
     });
 
-    // Cinematic reveal sequence
     const sequence = [
-      () => setRevealStep(1),
-      () => setRevealStep(2),
+      () => setRevealStep(1), () => setRevealStep(2),
       () => {
         setRevealStep(3);
         setTimeout(() => {
-            matchRefs.current.forEach(ref => {
-                if (ref) createHeartBurst(ref);
-            });
+          matchRefs.current.forEach(ref => { if (ref) createHeartBurst(ref); });
         }, 500);
       },
       () => setRevealStep(4),
     ];
     sequence.forEach((step, i) => setTimeout(step, (i + 1) * 2000));
     
-    // Clean up the Firebase listener when the page is closed
     return () => unsubscribe();
   }, []);
-
-  // --- NEW: The upgraded "Proximity Scoring" calculation ---
-  const calculateCompatibility = () => {
-    let userScore = 0;
-    let maxScore = 0;
-    let exactMatches = 0;
-    let totalComparisons = 0;
-
-    Object.keys(allRankings).forEach(category => {
-      const ranking = allRankings[category];
-      if (ranking?.player1 && ranking?.player2) {
-        const numItems = ranking.player1.length;
-        maxScore += numItems * 3; // Max possible score is 3 points per item
-        totalComparisons += numItems;
-
-        ranking.player1.forEach((p1_item: string, p1_index: number) => {
-          const p2_index = ranking.player2.indexOf(p1_item);
-
-          if (p2_index !== -1) { // If the item exists in the other list
-            const distance = Math.abs(p1_index - p2_index);
-            if (distance === 0) {
-              userScore += 3; // 3 points for exact match
-              exactMatches++;
-            } else if (distance === 1) {
-              userScore += 2; // 2 points for being 1 spot off
-            } else if (distance === 2) {
-              userScore += 1; // 1 point for being 2 spots off
-            }
-          }
-        });
-      }
-    });
-
-    return { 
-      exactMatches, 
-      totalComparisons, 
-      percentage: maxScore > 0 ? Math.round((userScore / maxScore) * 100) : 0 
-    };
-  };
   
-  const compatibility = calculateCompatibility();
-  const personalizedResult = getPersonalizedCompatibility(compatibility.percentage);
+  const personalizedResult = getPersonalizedCompatibility(overallScore);
   const completedCategories = Object.keys(allRankings).filter(cat => allRankings[cat]?.player1 && allRankings[cat]?.player2);
 
   return (
@@ -124,7 +112,7 @@ export default function ResultsPage() {
         {revealStep >= 1 && (
           <div className="card compatibility-reveal">
             <h2 style={{fontFamily: 'Cinzel'}}>Magical Compatibility</h2>
-            <div className="compatibility-score" style={{fontSize: '4rem', margin: '1rem 0'}}>{compatibility.percentage}%</div>
+            <div className="compatibility-score" style={{fontSize: '4rem', margin: '1rem 0'}}>{overallScore}%</div>
           </div>
         )}
 
@@ -140,10 +128,17 @@ export default function ResultsPage() {
             const category = categoryData[categoryId];
             const ranking = allRankings[categoryId];
             if (!category || !ranking) return null;
+            
+            // We now need to calculate the per-category score here for display
+            const categoryScores = calculateCategoryScore(ranking.player1, ranking.player2);
+            const categoryPercentage = categoryScores.maxScore > 0 ? Math.round((categoryScores.userScore / categoryScores.maxScore) * 100) : 0;
 
             return (
               <div key={categoryId} className="card compatibility-reveal" style={{animationDelay: `${catIndex * 0.3}s`, padding: '1.5rem', marginBottom: '1.5rem'}}>
-                <h3 style={{ fontFamily: 'Cinzel', marginBottom: '1rem', textAlign: 'center' }}>{category.name}</h3>
+                <h3 style={{ fontFamily: 'Cinzel', marginBottom: '1rem', textAlign: 'center' }}>
+                  {category.name}
+                  <span className="category-score">({categoryPercentage}%)</span>
+                </h3>
                 <table style={{width: '100%', textAlign: 'left'}}>
                   <thead>
                     <tr>
@@ -158,15 +153,16 @@ export default function ResultsPage() {
                       const player1Item = category.items.find((i: any) => i.id === itemId);
                       const player2Item = category.items.find((i: any) => i.id === ranking.player2[index]);
                       const isMatch = itemId === ranking.player2[index];
+                      const isPerfectMatch = isMatch && index === 0;
                       
                       const ref = isMatch ? (el: HTMLTableRowElement | null) => { if(el) matchRefs.current.push(el) } : null;
 
                       return (
-                        <tr key={index} ref={ref} className={isMatch ? 'match' : ''}>
+                        <tr key={index} ref={ref} className={isPerfectMatch ? 'perfect-match' : (isMatch ? 'match' : '')}>
                           <td><strong>#{index + 1}</strong></td>
                           <td>{player1Item?.name || '...'}</td>
                           <td>{player2Item?.name || '...'}</td>
-                          <td style={{textAlign: 'center'}}>{isMatch ? '✨' : ''}</td>
+                          <td style={{textAlign: 'center'}}>{isMatch ? (isPerfectMatch ? '🏆' : '✨') : ''}</td>
                         </tr>
                       )
                     })}
