@@ -269,6 +269,13 @@ body.welcome-active {
   margin-left: 0.5rem;
 }
 
+/* Styling for the item being actively dragged */
+.ranking-item.dragging {
+  opacity: 0.5;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+  transform: scale(1.05);
+}
+
 /* === RESPONSIVE DESIGN === */
 @media (max-width: 768px) {
   .card:hover {
