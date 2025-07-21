@@ -1,7 +1,7 @@
 // lib/data.ts
 export const categoryData: { [key: string]: any } = {
   'milk-tea': {
-    name: 'Milk Tea Flavors',
+    name: 'Boba',
     instruction: 'Rank from Favorite to Least Favorite:',
     icon: '🧋',
     items: [
@@ -49,8 +49,8 @@ export const categoryData: { [key: string]: any } = {
     ]
   },
   'celebrities': {
-    name: 'Men (lol)',
-    instruction: 'Rank from Most to Least Handsome:',
+    name: 'Jenny\'s Male Celebrity Tastes',
+    instruction: 'Rank from Most to Least Handsome (Andrew will try to guess Jenny\'s):',
     icon: '⭐',
     items: [
       { id: 'timothee', name: 'Timothée Chalamet', image: '/chalamet.jpg' },
