@@ -5,26 +5,28 @@ import { categoryData } from '@/lib/data'
 import ClientEffects from '@/components/ClientEffects'
 import FinalSurprise from '@/components/FinalSurprise'
 import { createHeartBurst } from '@/lib/effects'
+import { database } from '@/firebase' // Import the database connection
+import { ref, onValue } from "firebase/database"; // Import Firebase functions
 
 const getPersonalizedCompatibility = (score: number) => {
   if (score > 80) return {
     title: "An Extraordinary Connection ✨",
-    message: "Wow. We\'re so in sync, it's practically magic.",
-    subtext: "Are you sure we didn't share a Polyjuice Potion?"
+    message: "Wow. Your tastes are so in sync, it's practically magic.",
+    subtext: "Are you two sure you didn't share a Polyjuice Potion?"
   };
   if (score > 60) return {
     title: "A Powerful Harmony!",
-    message: "We agree on so much! This is the kind of magic that lasts.",
+    message: "You agree on so much. This is the kind of magic that lasts.",
     subtext: "Definitely more than just a fleeting charm."
   };
    if (score > 40) return {
     title: "A Promising Accord",
-    message: "We agree on the important things and can have fun debating the rest. A perfect balance!",
+    message: "You agree on the important things and can have fun debating the rest. A perfect balance!",
     subtext: "The foundation is strong."
   };
   return {
     title: "The Classic 'Opposites Attract'",
-    message: "Our differences could be what make things exciting. We complement each other.",
+    message: "Your differences could be what make things exciting. You complement each other.",
     subtext: "Every adventure needs a little unpredictability."
   };
 }
@@ -36,20 +38,21 @@ export default function ResultsPage() {
   const [revealStep, setRevealStep] = useState(0);
   const matchRefs = useRef<(HTMLTableRowElement | null)[]>([]);
 
-  const loadRankings = () => {
-    const rankings: { [key: string]: any } = {};
-    Object.keys(categoryData).forEach(category => {
-      const saved = localStorage.getItem(`rankings_${category}`);
-      if (saved) rankings[category] = JSON.parse(saved);
-    });
-    setAllRankings(rankings);
-  };
-  
   useEffect(() => {
+    // Get player names from localStorage (this doesn't need to be real-time)
     setPlayer1Name(localStorage.getItem('player1') || 'Wizard 1');
     setPlayer2Name(localStorage.getItem('player2') || 'Wizard 2');
-    loadRankings();
 
+    // --- NEW: This now listens for real-time updates from Firebase ---
+    const rankingsRef = ref(database, 'rankings/');
+    const unsubscribe = onValue(rankingsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        setAllRankings(data);
+      }
+    });
+
+    // Cinematic reveal sequence
     const sequence = [
       () => setRevealStep(1),
       () => setRevealStep(2),
@@ -64,37 +67,47 @@ export default function ResultsPage() {
       () => setRevealStep(4),
     ];
     sequence.forEach((step, i) => setTimeout(step, (i + 1) * 2000));
+    
+    // Clean up the Firebase listener when the page is closed
+    return () => unsubscribe();
   }, []);
 
-  // Live update listener for the results page
-  useEffect(() => {
-    const handleStorageChange = () => {
-      loadRankings();
-    };
-    window.addEventListener('storage', handleStorageChange);
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, []);
-
+  // --- NEW: The upgraded "Proximity Scoring" calculation ---
   const calculateCompatibility = () => {
+    let userScore = 0;
+    let maxScore = 0;
     let exactMatches = 0;
     let totalComparisons = 0;
+
     Object.keys(allRankings).forEach(category => {
       const ranking = allRankings[category];
       if (ranking?.player1 && ranking?.player2) {
-        ranking.player1.forEach((item: string, index: number) => {
-          if (ranking.player2[index] === item) {
-            exactMatches++;
+        const numItems = ranking.player1.length;
+        maxScore += numItems * 3; // Max possible score is 3 points per item
+        totalComparisons += numItems;
+
+        ranking.player1.forEach((p1_item: string, p1_index: number) => {
+          const p2_index = ranking.player2.indexOf(p1_item);
+
+          if (p2_index !== -1) { // If the item exists in the other list
+            const distance = Math.abs(p1_index - p2_index);
+            if (distance === 0) {
+              userScore += 3; // 3 points for exact match
+              exactMatches++;
+            } else if (distance === 1) {
+              userScore += 2; // 2 points for being 1 spot off
+            } else if (distance === 2) {
+              userScore += 1; // 1 point for being 2 spots off
+            }
           }
-          totalComparisons++;
         });
       }
     });
+
     return { 
       exactMatches, 
       totalComparisons, 
-      percentage: totalComparisons > 0 ? Math.round((exactMatches / totalComparisons) * 100) : 0 
+      percentage: maxScore > 0 ? Math.round((userScore / maxScore) * 100) : 0 
     };
   };
   
@@ -146,8 +159,7 @@ export default function ResultsPage() {
                       const player2Item = category.items.find((i: any) => i.id === ranking.player2[index]);
                       const isMatch = itemId === ranking.player2[index];
                       
-                      // Assign the ref to the table row only if it's a match
-                      const ref = isMatch ? (el: HTMLTableRowElement | null) => { matchRefs.current[index] = el } : null;
+                      const ref = isMatch ? (el: HTMLTableRowElement | null) => { if(el) matchRefs.current.push(el) } : null;
 
                       return (
                         <tr key={index} ref={ref} className={isMatch ? 'match' : ''}>
