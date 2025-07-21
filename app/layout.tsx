@@ -1,8 +1,9 @@
 import './globals.css'
 import type { Metadata } from 'next'
+import { Analytics } from '@vercel/analytics/next'; // <-- 1. IMPORT IT
 
 export const metadata: Metadata = {
-  title: 'The Sorting Hat',
+  title: 'The Sorting of Tastes',
   description: 'A magical ranking of tastes.',
 }
 
@@ -20,10 +21,8 @@ export default function RootLayout({
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
       </head>
       <body className="magical-bg">
-        {/* --- ADD THIS AUDIO PLAYER --- */}
-        <audio id="background-music" src="/hedwig.mp3" loop style={{ display: 'none' }} />
-        {/* --------------------------- */}
-                {children}
+        {children}
+        <Analytics /> {/* <-- 2. ADD THE COMPONENT HERE */}
       </body>
     </html>
   )
