@@ -1,12 +1,13 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { categoryData } from '@/lib/data'
 import ClientEffects from '@/components/ClientEffects'
 import FinalSurprise from '@/components/FinalSurprise'
 import { createHeartBurst } from '@/lib/effects'
 import { database } from '@/firebase'
-import { ref, onValue } from "firebase/database";
+import { ref, onValue, remove } from "firebase/database";
 
 const getPersonalizedCompatibility = (score: number) => {
   if (score > 80) return {
@@ -25,32 +26,29 @@ const getPersonalizedCompatibility = (score: number) => {
     subtext: "Our foundation is strong."
   };
   return {
-    title: "The Classic 'Oppotistes Attract'",
+    title: "The Classic 'Opposites Attract'",
     message: "Our differences are what make things exciting. We perfectly complement each other.",
     subtext: "Every adventure needs a little unpredictability."
   };
 }
 
-// CORRECTED: This now returns a raw score and the max possible score for a category
 const calculateCategoryScore = (player1Ranks: string[], player2Ranks: string[]) => {
   if (!player1Ranks || !player2Ranks) return { userScore: 0, maxScore: 0 };
-  
   let userScore = 0;
   const numItems = player1Ranks.length;
-  const maxScore = numItems * 3; // 3 points per item is the max
-
+  const maxScore = numItems * 3;
   player1Ranks.forEach((p1_item, p1_index) => {
     const p2_index = player2Ranks.indexOf(p1_item);
     if (p2_index !== -1) {
       const distance = Math.abs(p1_index - p2_index);
-      userScore += Math.max(0, 3 - distance); // Proximity scoring
+      userScore += Math.max(0, 3 - distance);
     }
   });
-
   return { userScore, maxScore };
 }
 
 export default function ResultsPage() {
+  const router = useRouter();
   const [allRankings, setAllRankings] = useState<{ [key: string]: any }>({});
   const [player1Name, setPlayer1Name] = useState('');
   const [player2Name, setPlayer2Name] = useState('');
@@ -67,38 +65,36 @@ export default function ResultsPage() {
       const data = snapshot.val();
       if (data) {
         setAllRankings(data);
-
-        // CORRECTED: Simplified and more accurate overall score calculation
         const completed = Object.values(data).filter((r: any) => r.player1 && r.player2);
-        
-        let totalUserScore = 0;
-        let totalMaxScore = 0;
-
-        completed.forEach((r: any) => {
-          const categoryScores = calculateCategoryScore(r.player1, r.player2);
-          totalUserScore += categoryScores.userScore;
-          totalMaxScore += categoryScores.maxScore;
-        });
-
-        const finalPercentage = totalMaxScore > 0 ? Math.round((totalUserScore / totalMaxScore) * 100) : 0;
-        setOverallScore(finalPercentage);
+        if (completed.length > 0) {
+            const totalUserScore = completed.reduce((sum, r: any) => {
+            const categoryScores = calculateCategoryScore(r.player1, r.player2);
+            return sum + categoryScores.userScore;
+            }, 0);
+            const totalMaxScore = completed.reduce((sum, r: any) => sum + r.player1.length * 3, 0);
+            const finalPercentage = totalMaxScore > 0 ? Math.round((totalUserScore / totalMaxScore) * 100) : 0;
+            setOverallScore(finalPercentage);
+        }
       }
     });
 
     const sequence = [
       () => setRevealStep(1), () => setRevealStep(2),
-      () => {
-        setRevealStep(3);
-        setTimeout(() => {
-          matchRefs.current.forEach(ref => { if (ref) createHeartBurst(ref); });
-        }, 500);
-      },
+      () => { setRevealStep(3); setTimeout(() => { matchRefs.current.forEach(ref => { if (ref) createHeartBurst(ref); }); }, 500); },
       () => setRevealStep(4),
     ];
     sequence.forEach((step, i) => setTimeout(step, (i + 1) * 2000));
     
     return () => unsubscribe();
   }, []);
+
+  const handleNewGame = () => {
+    if (confirm("Are you sure you want to start a new game? This will erase all current rankings.")) {
+      const rankingsRef = ref(database, 'rankings/');
+      remove(rankingsRef);
+      router.push('/');
+    }
+  };
   
   const personalizedResult = getPersonalizedCompatibility(overallScore);
   const completedCategories = Object.keys(allRankings).filter(cat => allRankings[cat]?.player1 && allRankings[cat]?.player2);
@@ -128,8 +124,6 @@ export default function ResultsPage() {
             const category = categoryData[categoryId];
             const ranking = allRankings[categoryId];
             if (!category || !ranking) return null;
-            
-            // We now need to calculate the per-category score here for display
             const categoryScores = calculateCategoryScore(ranking.player1, ranking.player2);
             const categoryPercentage = categoryScores.maxScore > 0 ? Math.round((categoryScores.userScore / categoryScores.maxScore) * 100) : 0;
 
@@ -154,7 +148,6 @@ export default function ResultsPage() {
                       const player2Item = category.items.find((i: any) => i.id === ranking.player2[index]);
                       const isMatch = itemId === ranking.player2[index];
                       const isPerfectMatch = isMatch && index === 0;
-                      
                       const ref = isMatch ? (el: HTMLTableRowElement | null) => { if(el) matchRefs.current.push(el) } : null;
 
                       return (
@@ -176,7 +169,7 @@ export default function ResultsPage() {
 
         {revealStep >= 4 && 
             <div style={{ textAlign: 'center', marginTop: '40px' }} className="animate__animated animate__fadeInUp">
-                <Link href="/" className="btn">Create a New Scroll</Link>
+                <button onClick={handleNewGame} className="btn">Create a New Scroll</button>
             </div>
         }
       </main>
