@@ -21,10 +21,9 @@ export default function RootLayout({
       </head>
       <body className="magical-bg">
         {/* --- ADD THIS AUDIO PLAYER --- */}
-        <audio src="/hedwig.mp3" autoPlay loop style={{ display: 'none' }} />
+        <audio id="background-music" src="/hedwig.mp3" loop style={{ display: 'none' }} />
         {/* --------------------------- */}
-        
-        {children}
+                {children}
       </body>
     </html>
   )
