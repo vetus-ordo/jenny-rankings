@@ -10,28 +10,32 @@ export default function Home() {
   const [showWelcome, setShowWelcome] = useState(true);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // The names are now hardcoded here for a personalized gift.
   const player1Name = "Jenny";
   const player2Name = "Andrew";
 
-  // This effect runs once to save the names for the other pages to use.
   useEffect(() => {
+    // If we've seen the welcome screen in this session, hide it
+    if (sessionStorage.getItem('welcomeScreenShown') === 'true') {
+      setShowWelcome(false);
+    }
+
+    // Save player names to localStorage for other pages to use
     localStorage.setItem('player1', player1Name);
     localStorage.setItem('player2', player2Name);
-  }, [player1Name, player2Name]);
+  }, []); // Empty dependency array so this runs only once
 
-  // This function will be called when she clicks the welcome screen
   const handleEnter = () => {
     setShowWelcome(false);
-    // Try to play the music
+    // Remember that we've shown the welcome screen for this session
+    sessionStorage.setItem('welcomeScreenShown', 'true');
+    
     audioRef.current?.play().catch(error => {
       console.error("Audio autoplay failed:", error);
     });
   };
 
-  // Calculate the number of completed categories
   const completedCount = useMemo(() => {
-    if (typeof window === 'undefined') return 0; // Guard against running on the server
+    if (typeof window === 'undefined') return 0;
     
     return Object.keys(categoryData).filter(key => {
       const rankings = JSON.parse(localStorage.getItem(`rankings_${key}`) || '{}');
@@ -43,11 +47,9 @@ export default function Home() {
 
   return (
     <>
-      {/* The audio player is controlled by our code, not autoplaying */}
       <audio ref={audioRef} src="/hedwig.mp3" loop />
       <ClientEffects />
 
-      {/* --- The Stunning Welcome Screen --- */}
       {showWelcome && (
         <div 
           className="welcome-overlay"
@@ -79,7 +81,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* The main content of the page, hidden until she clicks enter */}
       {!showWelcome && (
         <main className="container animate__animated animate__fadeIn">
           <header className="header">
