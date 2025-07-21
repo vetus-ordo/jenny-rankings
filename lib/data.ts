@@ -50,7 +50,7 @@ export const categoryData: { [key: string]: any } = {
   },
   'celebrities': {
     name: 'Jenny\'s Celebrity Tastes',
-    instruction: 'Rank from Most to Least Handsome (Andrew will try to guess Jenny\'s):',
+    instruction: 'Rank from Most to Least Handsome (Andrew will guess Jenny\'s):',
     icon: '⭐',
     items: [
       { id: 'timothee', name: 'Timothée Chalamet', image: '/chalamet.jpg' },
@@ -61,8 +61,8 @@ export const categoryData: { [key: string]: any } = {
     ]
   },
   'colors': {
-    name: 'Your Colors',
-    instruction: 'Rank from Favorite to Least Favorite (Andrew will try to guess Jenny\'s):',
+    name: 'Jenny\'s Colors',
+    instruction: 'Rank from Favorite to Least Favorite (Andrew will guess Jenny\'s):',
     icon: '🎨',
     items: [
       { id: 'taupe', name: 'Taupe', image: '/taupe.png' },
